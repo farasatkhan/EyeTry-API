@@ -38,23 +38,18 @@ exports.updatePersonalInformation = (req, res, next) => {
             Users.find({email: email}).then((response) => {
                 
                 // Generate new access token for user
-
                 const user = {
                     _id: response[0]._id.toString(),
                     email: response[0].email
                 }
 
-                console.log(user);
-
                 const token = AuthController.generateAccessToken(user);
-
-                console.log(token);
-                
                 const refreshToken = AuthController.generateRefreshToken(user);
             
                 tokens.refreshTokens.push(refreshToken);
 
                 res.status(200).json({
+                    user: response[0],
                     accessToken: token,
                     refreshToken: refreshToken,
                     message: "User Details are Updated Successfully."
