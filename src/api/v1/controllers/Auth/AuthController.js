@@ -13,7 +13,8 @@ var UsersModel = require('../../models/User');
     TODO: Store JWT tokens in the database once authentication is completed
     Currently, we are only using the refreshTokens array to manage refresh tokens.
 */
-let refreshTokens = [];
+var tokens = require('../../helpers/refreshToken');
+// const refreshTokens = [];
 
 exports.register = async (req, res, next) => {
     try {
@@ -45,9 +46,9 @@ exports.register = async (req, res, next) => {
 
         const token = this.generateAccessToken(createUser);
 
-        const refreshToken = jwt.sign({id: createUser._id, email: createUser.email}, process.env.REFRESH_TOKEN_SECRET);
+        const refreshToken = this.generateRefreshToken(createUser);
         
-        refreshTokens.push(refreshToken);
+        tokens.refreshTokens.push(refreshToken);
 
         res.status(201).json(
             {
@@ -85,9 +86,9 @@ exports.login = async (req, res, next) => {
         if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
 
         const token = this.generateAccessToken(isUserExists);
-        const refreshToken = jwt.sign({id: isUserExists._id, email: isUserExists.email}, process.env.REFRESH_TOKEN_SECRET);
+        const refreshToken = this.generateRefreshToken(isUserExists);
 
-        refreshTokens.push(refreshToken);
+        tokens.refreshTokens.push(refreshToken);
 
         res.status(201).json(
             {
@@ -105,13 +106,17 @@ exports.login = async (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-    refreshTokens = refreshTokens.filter(token => token !== req.body.token);
+    refreshTokens = tokens.refreshTokens.filter(token => token !== req.body.token);
     res.status(204).json({message: "Logout successful."});
 };
 
 exports.generateAccessToken = (user) => {
-    return jwt.sign({id: user._id, email: user.email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '10s'});
+    return jwt.sign({id: user._id, email: user.email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20s'});
 };
+
+exports.generateRefreshToken = (user) => {
+    return jwt.sign({id: user._id, email: user.email}, process.env.REFRESH_TOKEN_SECRET);
+}
 
 exports.generateNewAccessToken = (req, res, next) => {
 
@@ -120,7 +125,7 @@ exports.generateNewAccessToken = (req, res, next) => {
 
         if (refreshToken == null) return res.status(401).json({message: "No refresh token is present."});
 
-        if (!refreshTokens.includes(refreshToken)) return res.status(403).json({message: "Invalid refresh token."});
+        if (!tokens.refreshTokens.includes(refreshToken)) return res.status(403).json({message: "Invalid refresh token."});
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
 
