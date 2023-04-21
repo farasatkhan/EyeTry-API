@@ -5,6 +5,8 @@ var router = express.Router();
 
 var AuthController = require('../Auth/AuthController');
 
+const { comparePassword } = require('../../helpers/hashing');
+
 var Users = require('../../models/User');
 
 /*
@@ -66,6 +68,35 @@ exports.updatePersonalInformation = (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured"});
+    }
+}
+
+exports.deleteAccount = async (req, res, next) => {
+    try {
+
+        const { currentPassword } = req.body;
+
+        const isUserExists = await Users.findById(req.user.id);
+
+        if (!isUserExists) return res.status(400).json({message: "User account not found."});
+
+        const comparedPassword = comparePassword(currentPassword, isUserExists.password);
+
+        if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
+
+        Users.findByIdAndDelete(req.user.id).then((response) => {
+
+            return res.status(204).json({message: "User account is deleted successfully."});
+
+            // Expire Refresh Token
+
+        }).catch((error) => {
+            return res.status(403).json({message: "User don't have sufficient permissions to remove account."});
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while deleting user account."});
     }
 }
 

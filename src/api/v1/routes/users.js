@@ -8,4 +8,6 @@ router.get('/profile', authenticateToken, UsersController.profile);
 
 router.post('/update_info', authenticateToken, UsersController.updatePersonalInformation);
 
+router.post('/delete_account', authenticateToken, UsersController.deleteAccount);
+
 module.exports = router;
