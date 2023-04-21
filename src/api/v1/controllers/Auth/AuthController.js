@@ -112,11 +112,8 @@ exports.login = async (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-
-    console.log("Before:", tokens.getRefreshTokens());
+    
     tokens.filterRefreshTokens(req.body.token);
-    console.log("After:", tokens.getRefreshTokens());
-
     res.status(204).json({message: "Logout successful."});
 };
 

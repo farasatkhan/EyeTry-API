@@ -10,4 +10,6 @@ router.post('/update_info', authenticateToken, UsersController.updatePersonalInf
 
 router.post('/delete_account', authenticateToken, UsersController.deleteAccount);
 
+router.post('/change_password', authenticateToken, UsersController.changePassword);
+
 module.exports = router;

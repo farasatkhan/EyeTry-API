@@ -5,7 +5,7 @@ var router = express.Router();
 
 var AuthController = require('../Auth/AuthController');
 
-const { comparePassword } = require('../../helpers/hashing');
+const { comparePassword, hashPassword } = require('../../helpers/hashing');
 
 var Users = require('../../models/User');
 
@@ -100,6 +100,40 @@ exports.deleteAccount = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured while deleting user account."});
+    }
+}
+
+
+exports.changePassword = async (req, res, next) => {
+    try {
+
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        console.log(req.user);
+
+        const UserDoc = await Users.findById(req.user.id);
+
+        if (!UserDoc) return res.status(400).json({message: "Invalid user id."});
+
+        const comparedPassword = comparePassword(currentPassword, UserDoc.password);
+
+        if (!comparedPassword) return res.status(400).json({message: "Current password is incorrect."});
+
+        if (newPassword !== confirmPassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
+
+        const newHashedPassword = hashPassword(newPassword);
+
+        Users.findByIdAndUpdate(req.user.id, {password: newHashedPassword}, {new: true}).then((response) => {
+
+            return res.status(204).json({message: "User password is updated successfully."});
+        }).catch((err) => {
+            console.log(err);
+            return res.status(403).json({message: "User don't have sufficient permissions to change password."});
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while changing user password."});
     }
 }
 
