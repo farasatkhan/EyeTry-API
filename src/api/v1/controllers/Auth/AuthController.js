@@ -118,11 +118,11 @@ exports.logout = (req, res, next) => {
 };
 
 exports.generateAccessToken = (user) => {
-    return jwt.sign({id: user._id, email: user.email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20s'});
+    return jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20s'});
 };
 
 exports.generateRefreshToken = (user) => {
-    return jwt.sign({id: user._id, email: user.email}, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET);
 }
 
 exports.generateNewAccessToken = (req, res, next) => {

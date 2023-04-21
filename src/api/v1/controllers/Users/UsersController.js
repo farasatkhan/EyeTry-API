@@ -17,7 +17,7 @@ var tokens = require('../../helpers/refreshToken');
 
 exports.profile = async (req, res, next) => {
     try {
-
+        console.log(req.user);
         const isUserExists = await Users.findById(req.user.id).select("-password");
 
         if (!isUserExists) return res.status(400).json({message: "User account not found."});
@@ -35,7 +35,7 @@ exports.updatePersonalInformation = (req, res, next) => {
         const { firstname, lastname, email } = req.body;
 
         Users.updateOne(
-            {email: req.user.email},
+            {_id: req.user.id},
             {$set: {firstName: firstname, lastName: lastname, email: email}}
         ).then((updateResponse) => {
 
@@ -43,8 +43,7 @@ exports.updatePersonalInformation = (req, res, next) => {
                 
                 // Generate new access token for user
                 const user = {
-                    _id: response[0]._id.toString(),
-                    email: response[0].email
+                    id: response[0]._id.toString(),
                 }
 
                 const token = AuthController.generateAccessToken(user);
@@ -77,6 +76,8 @@ exports.deleteAccount = async (req, res, next) => {
     try {
 
         const { currentPassword, refreshToken } = req.body;
+
+        console.log(req.user.id)
 
         const isUserExists = await Users.findById(req.user.id);
 
