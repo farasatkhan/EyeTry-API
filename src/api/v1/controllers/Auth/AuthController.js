@@ -23,7 +23,7 @@ exports.register = async (req, res, next) => {
         const authorizationHeader = req.headers['authorization'];
         const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
-        if (Authtoken != null) return res.status(301).json({message: "User is logged in."});
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "User is logged in."});
 
         const {firstname, lastname, email, password, confirmpassword} = req.body;
 
@@ -45,10 +45,11 @@ exports.register = async (req, res, next) => {
         if (!createUser) return res.status(400).json({message: "Unable to create an account."});
 
         const token = this.generateAccessToken(createUser);
-
         const refreshToken = this.generateRefreshToken(createUser);
         
-        tokens.refreshTokens.push(refreshToken);
+        tokens.addRefreshTokens(refreshToken);
+
+        res.set('Authorization', `Bearer ${token}`);
 
         res.status(201).json(
             {
@@ -73,7 +74,10 @@ exports.login = async (req, res, next) => {
         const authorizationHeader = req.headers['authorization'];
         const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
-        if (Authtoken != null) return res.status(301).json({message: "User is already logged in."});
+        console.log("Verify Auth Access:", this.verifyAccessToken(Authtoken));
+        console.log("Verify Refresh Access:", this.verifyRefreshToken(Authtoken));
+
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "User is already logged in."});
 
         const {email, password} = req.body;
 
@@ -88,7 +92,9 @@ exports.login = async (req, res, next) => {
         const token = this.generateAccessToken(isUserExists);
         const refreshToken = this.generateRefreshToken(isUserExists);
 
-        tokens.refreshTokens.push(refreshToken);
+        tokens.addRefreshTokens(refreshToken);
+
+        res.set('Authorization', `Bearer ${token}`);
 
         res.status(201).json(
             {
@@ -106,7 +112,11 @@ exports.login = async (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-    refreshTokens = tokens.refreshTokens.filter(token => token !== req.body.token);
+
+    console.log("Before:", tokens.getRefreshTokens());
+    tokens.filterRefreshTokens(req.body.token);
+    console.log("After:", tokens.getRefreshTokens());
+
     res.status(204).json({message: "Logout successful."});
 };
 
@@ -125,7 +135,7 @@ exports.generateNewAccessToken = (req, res, next) => {
 
         if (refreshToken == null) return res.status(401).json({message: "No refresh token is present."});
 
-        if (!tokens.refreshTokens.includes(refreshToken)) return res.status(403).json({message: "Invalid refresh token."});
+        if (!tokens.getRefreshTokens().includes(refreshToken)) return res.status(403).json({message: "Invalid refresh token."});
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
 
@@ -153,5 +163,21 @@ exports.authenticateToken = (req, res, next) => {
 
         req.user = user;
         next();
+    });
+};
+
+exports.verifyAccessToken = (token) => {
+    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, res) => {
+        if (err) return false;
+
+        return true;
+    });
+};
+
+exports.verifyRefreshToken = (refreshToken) => {
+    return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, res) => {
+        if (err) return false;
+
+        return true;
     });
 };

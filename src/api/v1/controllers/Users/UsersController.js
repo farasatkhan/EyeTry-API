@@ -15,13 +15,15 @@ var Users = require('../../models/User');
 */
 var tokens = require('../../helpers/refreshToken');
 
-exports.profile = (req, res, next) => {
+exports.profile = async (req, res, next) => {
     try {
-        Users.find({email: req.user.email}).select('-password').then((result) => {
-            res.status(200).send(result);
-        }).catch((error) => {
-            if (error) res.status(400).json({message: "user not found"});
-        });
+
+        const isUserExists = await Users.findById(req.user.id).select("-password");
+
+        if (!isUserExists) return res.status(400).json({message: "User account not found."});
+
+        res.status(200).json(isUserExists);
+
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured"});
@@ -48,7 +50,7 @@ exports.updatePersonalInformation = (req, res, next) => {
                 const token = AuthController.generateAccessToken(user);
                 const refreshToken = AuthController.generateRefreshToken(user);
             
-                tokens.refreshTokens.push(refreshToken);
+                tokens.addRefreshTokens(refreshToken);
 
                 res.status(200).json({
                     user: response[0],
@@ -74,7 +76,7 @@ exports.updatePersonalInformation = (req, res, next) => {
 exports.deleteAccount = async (req, res, next) => {
     try {
 
-        const { currentPassword } = req.body;
+        const { currentPassword, refreshToken } = req.body;
 
         const isUserExists = await Users.findById(req.user.id);
 
@@ -86,9 +88,10 @@ exports.deleteAccount = async (req, res, next) => {
 
         Users.findByIdAndDelete(req.user.id).then((response) => {
 
-            return res.status(204).json({message: "User account is deleted successfully."});
-
             // Expire Refresh Token
+            tokens.filterRefreshTokens(refreshToken);
+
+            return res.status(204).json({message: "User account is deleted successfully."});
 
         }).catch((error) => {
             return res.status(403).json({message: "User don't have sufficient permissions to remove account."});
@@ -99,4 +102,6 @@ exports.deleteAccount = async (req, res, next) => {
         res.status(500).json({message: "500: Error occured while deleting user account."});
     }
 }
+
+
 
