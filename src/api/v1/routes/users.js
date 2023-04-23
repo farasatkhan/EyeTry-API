@@ -17,15 +17,13 @@ router.post('/forget_password', UsersController.forgetPassword);
 router.post('/reset_password', UsersController.resetPassword);
 
 router.post('/add_prescription', authenticateToken, UsersController.addPrescription);
-
 router.get('/view_prescription/:prescriptionId', authenticateToken, UsersController.viewPrescription);
-
 router.put('/update_prescription/:prescriptionId', authenticateToken, UsersController.updatePrescription);
-
 router.delete('/delete_prescription/:prescriptionId', authenticateToken, UsersController.deletePrescription);
 
 router.post('/add_payment', authenticateToken, UsersController.addPayment);
-
 router.get('/view_payment/:paymentId', authenticateToken, UsersController.viewPayment);
+router.put('/update_payment/:paymentId', authenticateToken, UsersController.updatePayment);
+router.delete('/delete_payment/:paymentId', authenticateToken, UsersController.deletePayment);
 
 module.exports = router;

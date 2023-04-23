@@ -439,7 +439,81 @@ exports.viewPayment = async (req, res, next) => {
 
 
 // Update Payment
+exports.updatePayment = async (req, res, next) => {
+    try {
+
+        const paymentId = req.params.paymentId;
+
+        const isPaymentExists = await Users.findById(req.user.id);
+
+        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({message: "Payments does not exists."});
+
+        const 
+        {   
+            paymentType, nameOnCard, cardNumber, expirationMonth, expirationYear, cvv,
+            firstName, lastName, country, address, city, state, zipCode
+
+        } = req.body;
+
+        const updatedPayment = {
+            paymentType: paymentType,
+            nameOnCard: nameOnCard,
+            cardNumber: cardNumber,
+            expirationMonth: expirationMonth,
+            expirationYear: expirationYear,
+            cvv: cvv,
+            billingInfo: {
+                firstName: firstName,
+                lastName: lastName,
+                country: country,
+                address: address,
+                city: city,
+                state: state,
+                zipCode: zipCode
+            }
+        }
+
+        const UpdatedPayment = await Payment.findByIdAndUpdate(paymentId, updatedPayment, {new: true});
+
+        if (!UpdatedPayment) res.status(400).json({message: "400: Error occured while updating payment."});
+
+        res.status(200).json(UpdatedPayment);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while updating payment information."});
+    }
+}
+
 // Delete Payment
+exports.deletePayment = async (req, res, next) => {
+    try {
+
+        const paymentId = req.params.paymentId;
+
+        const isPaymentExists = await Users.findById(req.user.id);
+
+        console.log("Delete Payment: ", isPaymentExists);
+
+        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({message: "Payment does not exists."});
+
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {payments: paymentId}});
+        
+        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing payment method from user."});
+
+        const deletePayment = await Payment.findByIdAndDelete(paymentId);
+
+        if (!deletePayment) res.status(400).json({message: "400: Error occured while removing payment method."});
+
+        res.status(204).json({message: "204: Payment is removed."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while deleting payment."});
+    }
+}
+
+
 // Add Address to AddressBook
 // Update Address to AddressBook
 // Delete Address to AddressBook
