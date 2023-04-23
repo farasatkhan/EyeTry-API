@@ -544,7 +544,56 @@ exports.addAddress = async (req, res, next) => {
 }
 
 // Update Address to AddressBook
+exports.updateAddress = async (req, res, next) => {
+    try {
+
+        const addressId = req.params.addressId;
+
+        const { firstName, lastName, phone, currentAddress, city, state, country, zipCode } = req.body;
+
+        const updatedAddress = await Users.findOneAndUpdate(
+            {_id: req.user.id, 'addressBook._id': addressId},
+            {
+                $set: {
+                    "addressBook.$.firstName": firstName,
+                    "addressBook.$.lastName": lastName,
+                    "addressBook.$.phone": phone,
+                    "addressBook.$.currentAddress": currentAddress,
+                    "addressBook.$.city": city,
+                    "addressBook.$.state": state,
+                    "addressBook.$.country": country,
+                    "addressBook.$.zipCode": zipCode,
+                }
+            }, {new: true});
+
+        if (!updatedAddress) return res.status(400).json({message: "Unable to update address."});
+        
+        res.status(200).json(updatedAddress);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while updating address."});
+    }
+}
+
 // Delete Address to AddressBook
+exports.deleteAddress = async (req, res, next) => {
+    try {
+
+        const addressBookId = req.params.addressId;
+
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {addressBook: { _id: addressBookId }}});
+        
+        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing address from user."});
+
+        res.status(204).json(removeFromUserDoc);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while deleting address."});
+    }
+}
+
 // Upload Try-On Images
 // Remove Try-On Images
 // Manage Wishlist [save item to wishlist]
