@@ -543,6 +543,24 @@ exports.addAddress = async (req, res, next) => {
     }
 }
 
+// View Particular Address
+exports.viewAddress = async (req, res, next) => {
+    try {
+
+        const addressId = req.params.addressId;
+
+        const viewAddress = await Users.findById({ _id: req.user.id}).select({addressBook: { $elemMatch: { _id: addressId }}});
+
+        if (!viewAddress) res.status(404).json({message: "Error occured while viewing address in addressbook."});
+
+        res.status(200).json(viewAddress);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while viewing address."});
+    }
+}
+
 // Update Address to AddressBook
 exports.updateAddress = async (req, res, next) => {
     try {
