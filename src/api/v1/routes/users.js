@@ -31,4 +31,9 @@ router.get('/view_address/:addressId', authenticateToken, UsersController.viewAd
 router.put('/update_address/:addressId', authenticateToken, UsersController.updateAddress);
 router.delete('/delete_address/:addressId', authenticateToken, UsersController.deleteAddress);
 
+
+router.post('/add_favorite', authenticateToken, UsersController.addWishlist);
+router.get('/view_favorite', authenticateToken, UsersController.viewWishlist);
+router.delete('/delete_favorite/:productId', authenticateToken, UsersController.removeWishlist);
+
 module.exports = router;

@@ -612,10 +612,68 @@ exports.deleteAddress = async (req, res, next) => {
     }
 }
 
+// Add to Wishlist
+exports.addWishlist = async (req, res, next) => {
+    try {
+
+        const { productId } = req.body;
+
+        const addedWishlistItem = await Users.findByIdAndUpdate({_id: req.user.id}, {$push: { wishlist: productId}});
+
+        if (!addedWishlistItem) res.status(400).json({message: "400: Error occured while adding item to users."});
+
+        res.status(200).json({message: "Product added to wishlist."});
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while adding item to wishlist."});
+    }
+}
+
+// Remove from Wishlist
+exports.removeWishlist = async (req, res, next) => {
+    try {
+
+        const productId = req.params.productId;
+
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {wishlist: productId}});
+        
+        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing item from wishlist from user."});
+
+        res.status(204).json(removeFromUserDoc);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while removing item from wishlist."});
+    }
+}
+
+// View Wishlists
+/*
+    TODO: View Wishlist should return products instead of just their ids.
+*/
+exports.viewWishlist = async (req, res, next) => {
+    try {
+
+        const viewWishlistProducts = await Users.findById({ _id: req.user.id}).select('wishlist').populate('wishlist');
+
+        if (!viewWishlistProducts) res.status(404).json({message: "Error occured while viewing wishlist items."});
+
+        res.status(200).json(viewWishlistProducts);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while viewing item from wishlist."});
+    }
+}
+
+// Add to Giftcard [Admin]
+// View Giftcards [Admin]
+// Update Giftcards [Admin]
+// Redeem Giftcards
+
 // Upload Try-On Images
 // Remove Try-On Images
-// Manage Wishlist [save item to wishlist]
-// Manage Giftcard [save item to giftcards]
-// Redeem Giftcards
+
 // Upload Profile Image
 // Delete Profile Image

@@ -118,7 +118,7 @@ exports.logout = (req, res, next) => {
 };
 
 exports.generateAccessToken = (user) => {
-    return jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '20s'});
+    return jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '60s'});
 };
 
 exports.generateRefreshToken = (user) => {

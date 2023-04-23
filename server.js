@@ -10,6 +10,11 @@ require('./src/api/v1/services/database');
 var AuthRouter = require('./src/api/v1/routes/auth');
 var usersRouter = require('./src/api/v1/routes/users');
 
+/*
+    The goal of the test router is to facilite the testing of other routes.
+*/
+var testProductRouter = require('./test/routes/products');
+
 var app = express();
 
 // view engine setup
@@ -28,6 +33,11 @@ app.use(cors({
 
 app.use('/auth', AuthRouter);
 app.use('/users', usersRouter);
+
+/*
+    The goal of the test router is to facilite the testing of other routes.
+*/
+app.use('/product', testProductRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
