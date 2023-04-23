@@ -10,12 +10,14 @@ const { comparePassword, hashPassword } = require('../../helpers/hashing');
 var Users = require('../../models/User');
 var Prescription = require('../../models/Prescription');
 var Payment = require('../../models/Payment');
+var GiftCard = require('../../models/Giftcard');
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
     Currently, we are only using the refreshTokens array to manage refresh tokens.
 */
 var tokens = require('../../helpers/refreshToken');
+const Giftcard = require('../../models/Giftcard');
 
 exports.profile = async (req, res, next) => {
     try {
@@ -667,10 +669,15 @@ exports.viewWishlist = async (req, res, next) => {
     }
 }
 
-// Add to Giftcard [Admin]
-// View Giftcards [Admin]
-// Update Giftcards [Admin]
 // Redeem Giftcards
+exports.redeemGiftcard = (req, res, next) => {
+    try {
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while redeeming giftcards."});
+    }
+}
 
 // Upload Try-On Images
 // Remove Try-On Images

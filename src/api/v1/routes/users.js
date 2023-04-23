@@ -36,4 +36,6 @@ router.post('/add_favorite', authenticateToken, UsersController.addWishlist);
 router.get('/view_favorite', authenticateToken, UsersController.viewWishlist);
 router.delete('/delete_favorite/:productId', authenticateToken, UsersController.removeWishlist);
 
+
+
 module.exports = router;
