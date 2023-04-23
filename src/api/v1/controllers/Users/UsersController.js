@@ -9,6 +9,7 @@ const { comparePassword, hashPassword } = require('../../helpers/hashing');
 
 var Users = require('../../models/User');
 var Prescription = require('../../models/Prescription');
+var Payment = require('../../models/Payment');
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
@@ -367,6 +368,76 @@ exports.deletePrescription = async (req, res, next) => {
 }
 
 // Add Payment
+exports.addPayment = (req, res, next) => {
+    try {
+
+        const 
+        {
+            paymentType, nameOnCard, cardNumber, expirationMonth, expirationYear, cvv,
+            firstName, lastName, country, address, city, state, zipCode
+
+        } = req.body;
+
+        Payment.create({
+            paymentType: paymentType,
+            nameOnCard: nameOnCard,
+            cardNumber: cardNumber,
+            expirationMonth: expirationMonth,
+            expirationYear: expirationYear,
+            cvv: cvv,
+            billingInfo: {
+                firstName: firstName,
+                lastName: lastName,
+                country: country,
+                address: address,
+                city: city,
+                state: state,
+                zipCode: zipCode
+            }
+        }).then((payment) => {
+
+            Users.findByIdAndUpdate(req.user.id, {$push: {payments: payment._id}}).then((response) => {
+                res.status(200).json({message: "Payment Method is added."});
+            }).catch((error) => {
+                console.log(error);
+                res.status(400).json({message: "Error occured while linking payment object to user."});
+            });
+
+        }).catch((error) => {
+            res.status(400).json({message: "Unable to store payment information."});
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while adding payment."});
+    }
+}
+
+// View Particular Payment
+exports.viewPayment = async (req, res, next) => {
+    try {
+
+        const paymentId = req.params.paymentId;
+
+        const isPaymentExists = await Users.findById(req.user.id);
+
+        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({message: "Payment does not exists."});
+
+        Payment.findById(paymentId).then((payment) => {
+            console.log(payment)
+            res.status(200).send(payment);
+        }).catch((error) => {
+            console.log(error);
+            res.status(400).json({message: "400: No payment exists with the following id."});
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while viewing payment information."});
+    }
+}
+
+
 // Update Payment
 // Delete Payment
 // Add Address to AddressBook

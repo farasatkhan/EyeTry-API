@@ -19,13 +19,13 @@ const paymentSchema = new mongoose.Schema({
         },
     },
     expirationMonth: {
-        type: Number,
+        type: Date,
         required: function() {
             return this.paymentType === 'Credit Card';
         },
     },
     expirationYear: {
-        type: Number,
+        type: Date,
         required: function() {
             return this.paymentType === 'Credit Card';
         },
