@@ -670,8 +670,28 @@ exports.viewWishlist = async (req, res, next) => {
 }
 
 // Redeem Giftcards
-exports.redeemGiftcard = (req, res, next) => {
+exports.redeemGiftcard = async (req, res, next) => {
     try {
+
+        const { code } = req.body;
+
+        const redeemGiftcard = await GiftCard.find({code: code});
+
+        if (!redeemGiftcard || redeemGiftcard.length === 0) return res.status(404).json({message: "Invalid giftcard code."});
+
+        console.log(redeemGiftcard[0].status);
+
+        if (redeemGiftcard[0].status !== 'active') return res.status(404).json({message: "Giftcard is expired."});
+
+        const redeemingGiftcard = await GiftCard.findOneAndUpdate({code: code}, {$push: {usedBy: req.user.id}});
+
+        if (!redeemingGiftcard) return res.status(404).json({message: "Error occured while redeeming."});
+
+        res.status(200).json({
+            code: redeemGiftcard[0].code,
+            value: redeemGiftcard[0].value,
+            currency: redeemGiftcard[0].currency
+        });
 
     } catch (error) {
         console.log(error);
