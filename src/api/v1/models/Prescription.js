@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const prescriptionInfoSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
     prescriptionName: {
         type: String,
         required: true
@@ -15,7 +10,7 @@ const prescriptionInfoSchema = new mongoose.Schema({
         required: true
     },
     birthYear: {
-        type: Number,
+        type: Date,
         required: true
     },
     dateOfPrescription: {

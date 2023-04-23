@@ -12,4 +12,16 @@ router.post('/delete_account', authenticateToken, UsersController.deleteAccount)
 
 router.post('/change_password', authenticateToken, UsersController.changePassword);
 
+router.post('/forget_password', UsersController.forgetPassword);
+
+router.post('/reset_password', UsersController.resetPassword);
+
+router.post('/add_prescription', authenticateToken, UsersController.addPrescription);
+
+router.get('/view_prescription/:prescriptionId', authenticateToken, UsersController.viewPrescription);
+
+router.put('/update_prescription/:prescriptionId', authenticateToken, UsersController.updatePrescription);
+
+router.delete('/delete_prescription/:prescriptionId', authenticateToken, UsersController.deletePrescription);
+
 module.exports = router;

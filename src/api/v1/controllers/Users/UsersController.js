@@ -8,6 +8,7 @@ var AuthController = require('../Auth/AuthController');
 const { comparePassword, hashPassword } = require('../../helpers/hashing');
 
 var Users = require('../../models/User');
+var Prescription = require('../../models/Prescription');
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
@@ -138,5 +139,243 @@ exports.changePassword = async (req, res, next) => {
     }
 }
 
+/* 
+    These features can be implemented once reset email is implemented
+*/
+exports.forgetPassword = async (req, res, next) => {
+    try {
+
+        const { email } = req.body;
+
+        const UserDocs = await Users.findOne({email: email});
+
+        if (!UserDocs) return res.status(400).json({message: "User not found."});
+
+        res.status(200).json({message: "Success! check your email for further steps."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while forgeting user password."});
+    }
+}
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+
+        // Reset Password After User Clicks on Reset Password in email
+        res.status(200).json({message: "This feature will be implemented in next sprint."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while changing user password."});
+    }
+}
+
+// Add Prescription
+exports.addPrescription = (req, res, next) => {
+
+    try {
+
+        const 
+        {   
+            prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
+            singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
+            rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
+            leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
+            rightBaseDirectionVertical
+
+        } = req.body;
+
+        Prescription.create({
+            prescriptionName: prescriptionName,
+            prescriptionType: prescriptionType,
+            birthYear: birthYear,
+            dateOfPrescription: dateOfPrescription,
+            renewalReminderDate: renewalReminderDate,
+            singleOrDualPD: singleOrDualPD,
+            pdInformation: {
+                left: {
+                    leftPD: leftPD,
+                    sphere: leftSphere,
+                    cylinder: leftCylinder,
+                    axis: leftAxis,
+                },
+                right: {
+                    rightPD: rightPD,
+                    sphere: rightSphere,
+                    cylinder: rightCylinder,
+                    axis: rightAxis,
+                },
+                nvadd: nvadd,
+            },
+            prismProperties: {
+                left: {
+                    prismHorizontal: leftPrismHorizontal, 
+                    prismVertical: leftPrismVertical, 
+                    baseDirectionHorizontal: leftBaseDirectionHorizontal,
+                    baseDirectionVertical: leftBaseDirectionVertical
+                },
+                right: {
+                    prismHorizontal: rightPrismHorizontal, 
+                    prismVertical: rightPrismVertical, 
+                    baseDirectionHorizontal: rightBaseDirectionHorizontal,
+                    baseDirectionVertical: rightBaseDirectionVertical
+                }
+            }
+        }).then((prescription) => {
+
+            Users.findByIdAndUpdate(req.user.id, {$push: {prescriptions: prescription._id}}).then((response) => {
+                res.status(200).json({message: "Prescription is added."});
+            }).catch((error) => {
+                console.log(error);
+                res.status(400).json({message: "Error occured while linking prescription object to user."});
+            });
+
+        }).catch((error) => {
+            console.log(error);
+            res.status(400).json({message: "400: Unable to Store Prescription."});
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while adding prescription."});
+    }
+}
+
+// View Particular Prescription
+exports.viewPrescription = async (req, res, next) => {
+    try {
+
+        const prescriptionId = req.params.prescriptionId;
+
+        const isPrescriptionExists = await Users.findById(req.user.id);
+
+        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({message: "Prescription does not exists."});
+
+        Prescription.findById(prescriptionId).then((prescription) => {
+            console.log(prescription)
+            res.status(200).send(prescription);
+        }).catch((error) => {
+            console.log(error);
+            res.status(400).json({message: "400: No prescription exists with the following id."});
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while viewing prescription."});
+    }
+}
 
 
+// Update Prescription
+exports.updatePrescription = async (req, res, next) => {
+    try {
+
+        const prescriptionId = req.params.prescriptionId;
+
+        const isPrescriptionExists = await Users.findById(req.user.id);
+
+        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({message: "Prescription does not exists."});
+
+        const 
+        {   
+            prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
+            singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
+            rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
+            leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
+            rightBaseDirectionVertical
+
+        } = req.body;
+
+        const updatedPrescription = {
+            prescriptionName: prescriptionName,
+            prescriptionType: prescriptionType,
+            birthYear: birthYear,
+            dateOfPrescription: dateOfPrescription,
+            renewalReminderDate: renewalReminderDate,
+            singleOrDualPD: singleOrDualPD,
+            pdInformation: {
+                left: {
+                    leftPD: leftPD,
+                    sphere: leftSphere,
+                    cylinder: leftCylinder,
+                    axis: leftAxis,
+                },
+                right: {
+                    rightPD: rightPD,
+                    sphere: rightSphere,
+                    cylinder: rightCylinder,
+                    axis: rightAxis,
+                },
+                nvadd: nvadd,
+            },
+            prismProperties: {
+                left: {
+                    prismHorizontal: leftPrismHorizontal, 
+                    prismVertical: leftPrismVertical, 
+                    baseDirectionHorizontal: leftBaseDirectionHorizontal,
+                    baseDirectionVertical: leftBaseDirectionVertical
+                },
+                right: {
+                    prismHorizontal: rightPrismHorizontal, 
+                    prismVertical: rightPrismVertical, 
+                    baseDirectionHorizontal: rightBaseDirectionHorizontal,
+                    baseDirectionVertical: rightBaseDirectionVertical
+                }
+            }
+        }
+
+        const UpdatedPrescription = await Prescription.findByIdAndUpdate(prescriptionId, updatedPrescription, {new: true});
+
+        if (!UpdatedPrescription) res.status(400).json({message: "400: Error occured while updating prescription."});
+
+        res.status(200).json(UpdatedPrescription);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while updating prescription."});
+    }
+}
+
+
+// Delete Prescription
+exports.deletePrescription = async (req, res, next) => {
+    try {
+
+        const prescriptionId = req.params.prescriptionId;
+
+        const isPrescriptionExists = await Users.findById(req.user.id);
+
+        console.log("Delete Prescription: ", isPrescriptionExists);
+
+        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({message: "Prescription does not exists."});
+
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {prescriptions: prescriptionId}});
+        
+        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing prescription from user."});
+
+        const deletePrescription = await Prescription.findByIdAndDelete(prescriptionId);
+
+        if (!deletePrescription) res.status(400).json({message: "400: Error occured while removing prescription."});
+
+        res.status(204).json({message: "204: Prescription is removed."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while deleting prescription."});
+    }
+}
+
+// Add Payment
+// Update Payment
+// Delete Payment
+// Add Address to AddressBook
+// Update Address to AddressBook
+// Delete Address to AddressBook
+// Upload Try-On Images
+// Remove Try-On Images
+// Manage Wishlist [save item to wishlist]
+// Manage Giftcard [save item to giftcards]
+// Redeem Giftcards
+// Upload Profile Image
+// Delete Profile Image
