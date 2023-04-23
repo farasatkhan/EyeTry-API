@@ -515,6 +515,34 @@ exports.deletePayment = async (req, res, next) => {
 
 
 // Add Address to AddressBook
+exports.addAddress = async (req, res, next) => {
+    try {
+
+        const { firstName, lastName, phone, currentAddress, city, state, country, zipCode } = req.body;
+
+        const newAddress = {
+            firstName: firstName,
+            lastname: lastName,
+            phone: phone,
+            currentAddress: currentAddress,
+            city: city,
+            state: state,
+            country: country,
+            zipCode: zipCode
+        }
+
+        const addedAddress = await Users.findByIdAndUpdate(req.user.id, {$push: {addressBook: newAddress}}, {new: true});
+
+        if (!addedAddress) return res.status(404).json({message: "Error occured while adding address to addressbook."});
+
+        res.status(200).json(addedAddress);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while adding address."});
+    }
+}
+
 // Update Address to AddressBook
 // Delete Address to AddressBook
 // Upload Try-On Images

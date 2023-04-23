@@ -26,4 +26,6 @@ router.get('/view_payment/:paymentId', authenticateToken, UsersController.viewPa
 router.put('/update_payment/:paymentId', authenticateToken, UsersController.updatePayment);
 router.delete('/delete_payment/:paymentId', authenticateToken, UsersController.deletePayment);
 
+router.post('/add_address', authenticateToken, UsersController.addAddress);
+
 module.exports = router;
