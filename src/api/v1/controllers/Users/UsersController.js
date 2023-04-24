@@ -19,7 +19,6 @@ var GiftCard = require('../../models/Giftcard');
     Currently, we are only using the refreshTokens array to manage refresh tokens.
 */
 var tokens = require('../../helpers/refreshToken');
-const Giftcard = require('../../models/Giftcard');
 
 exports.profile = async (req, res, next) => {
     try {
