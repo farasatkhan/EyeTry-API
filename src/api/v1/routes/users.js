@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+var multer  = require('multer')
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage})
+
 var UsersController = require('../controllers/Users/UsersController');
 var { authenticateToken } = require('../controllers/Auth/AuthController');
 
@@ -37,5 +41,9 @@ router.get('/view_favorite', authenticateToken, UsersController.viewWishlist);
 router.delete('/delete_favorite/:productId', authenticateToken, UsersController.removeWishlist);
 
 router.post('/redeem_giftcard', authenticateToken, UsersController.redeemGiftcard);
+
+router.post('/upload_image', authenticateToken, upload.single('image'), UsersController.uploadProfileImage);
+router.get('/view_image', authenticateToken, UsersController.viewProfileImage);
+router.delete('/remove_image', authenticateToken, UsersController.deleteProfileImage);
 
 module.exports = router;
