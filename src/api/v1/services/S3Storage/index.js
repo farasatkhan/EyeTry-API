@@ -1,6 +1,5 @@
 require('dotenv').config({ path: './src/config/.env' });
 
-const fs = require('fs');
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 const { getSignedUrl }  = require('@aws-sdk/s3-request-presigner');

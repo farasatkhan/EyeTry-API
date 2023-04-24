@@ -731,11 +731,11 @@ exports.viewProfileImage = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
-        if (!imageId) res.status(400).json({message: "Error occured while retriving image id."});
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
 
         const url = await S3Storage.downloadFile(imageId.profilePicture);
 
-        if (!url) res.status(400).json({message: "Error occured while viewing image."});
+        if (!url) res.status(400).json({message: "Error occured while viewing image from s3"});
 
         res.status(200).json({profilePicture: url});
         
@@ -751,11 +751,15 @@ exports.deleteProfileImage = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
-        if (!imageId) res.status(400).json({message: "Error occured while retriving image id."});
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
 
         const removedImage = await S3Storage.deleteFile(imageId.profilePicture);
 
         if (!removedImage) res.status(400).json({message: "Error occured while removing image from s3"});
+
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {profilePicture: ''});
+
+        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
 
         res.status(200).json({message: "Image is removed from successfully."});
         
