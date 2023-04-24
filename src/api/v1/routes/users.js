@@ -46,4 +46,8 @@ router.post('/upload_image', authenticateToken, upload.single('image'), UsersCon
 router.get('/view_image', authenticateToken, UsersController.viewProfileImage);
 router.delete('/remove_image', authenticateToken, UsersController.deleteProfileImage);
 
+router.post('/upload_tryon_image', authenticateToken, upload.single('image'), UsersController.uploadTryOnImage);
+router.get('/view_tryon_images', authenticateToken, UsersController.viewTryOnImages);
+router.delete('/remove_tryon_image/:tryOnImageId', authenticateToken, UsersController.deleteTryOnImage);
+
 module.exports = router;

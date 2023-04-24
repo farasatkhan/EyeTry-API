@@ -770,8 +770,71 @@ exports.deleteProfileImage = async (req, res, next) => {
 }
 
 // Upload Try-On Images
+exports.uploadTryOnImage = async (req, res, next) => {
+    try {
+
+        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+
+        const randImageName = randomImageName();
+
+        const s3Upload = await S3Storage.uploadFile(req.file, randImageName);
+
+        if (!s3Upload) return res.status(400).json({message: "Error occured while uploading to s3"});
+
+        const tryOnImage = await Users.findByIdAndUpdate(req.user.id, {$push: {tryOnImages: randImageName}});
+
+        if (!tryOnImage) return res.status(400).json({message: "Error occured while uploading image to db"});
+
+        res.status(200).json({message: "Try On Image uploaded successfully"});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while uploading images"});
+    }
+}
 
 // View Try-On Images
+exports.viewTryOnImages = async (req, res, next) => {
+    try {
+
+        const imageId = await Users.findById(req.user.id).select('tryOnImages');
+
+        if (imageId && imageId.tryOnImages.length === 0) return res.status(400).json({message: "No try on images are present."});
+
+        const urls = await S3Storage.viewAllFiles(imageId.tryOnImages);
+
+        if (!urls) res.status(400).json({message: "Error occured while viewing image from s3"});
+
+        res.status(200).json({tryonImages: urls});
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while viewing images"});
+    }
+}
 
 // Remove Try-On Images
+exports.deleteTryOnImage = async (req, res, next) => {
+    try {
 
+        const removeTryOnImageId = req.params.tryOnImageId;
+
+        const userDoc = await Users.findById(req.user.id).select('tryOnImages');
+
+        if (userDoc && userDoc.tryOnImages.indexOf(removeTryOnImageId) === -1) return res.status(400).json({message: "No try on images are present."});
+
+        const removedImage = await S3Storage.deleteFile(removeTryOnImageId);
+
+        if (!removedImage) res.status(400).json({message: "Error occured while removing image from s3"});
+
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {$pull: {tryOnImages: removeTryOnImageId}});
+
+        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+
+        res.status(200).json({message: "Image is removed from successfully."});
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while deleting images"});
+    }
+}

@@ -41,6 +41,27 @@ exports.downloadFile = async (fileName) => {
     return await getSignedUrl(s3, command, { expiresIn: 3600 });
 }
 
+exports.viewAllFiles = async (filesList) => {
+
+    const urls = [];
+
+    for (fileName of filesList) {
+
+        const getObjectParams = {
+            Bucket: bucketName,
+            Key: fileName
+        }
+        
+        const command = new GetObjectCommand(getObjectParams);
+    
+        const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+        urls.push(url);
+    }
+
+    return urls;
+}
+
 exports.deleteFile = async (fileName) => {
     const params = {
         Bucket: bucketName,
