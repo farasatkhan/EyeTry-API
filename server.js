@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({
   origin: 'http://localhost:5000',
+  credentials: true
 }));
 
 app.use('/auth', AuthRouter);
