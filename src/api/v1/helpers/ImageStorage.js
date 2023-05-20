@@ -7,7 +7,7 @@ var path = require('path');
 var storageMem = multer.memoryStorage();
 
 // Upload Profile Images to Server
-var storageDisk = multer.diskStorage({
+var storageDiskProfilePicture = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, './public/uploads/profile_images/')
     },
@@ -16,6 +16,17 @@ var storageDisk = multer.diskStorage({
     }
 });
 
-exports.uploadProfileImagesServer = multer({storage: storageDisk});
+// Uplaod Try On Images to Server
+var storageDiskTryOnImages = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, './public/uploads/tryon_images/')
+    },
+    filename: function (req, file, callback) {
+        callback(null, randomImageName() + path.extname(file.originalname))
+    }
+});
+
+exports.uploadProfileImagesServer = multer({storage: storageDiskProfilePicture});
+exports.uploadTryOnImagesServer = multer({storage: storageDiskTryOnImages});
 
 exports.uploadMemStorageS3 = multer({ storage: storageMem});

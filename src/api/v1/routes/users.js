@@ -4,7 +4,7 @@ var router = express.Router();
 var UsersController = require('../controllers/Users/UsersController');
 
 var { authenticateToken } = require('../controllers/Auth/AuthController');
-var { uploadMemStorageS3, uploadProfileImagesServer} = require('../helpers/ImageStorage');
+var { uploadMemStorageS3, uploadProfileImagesServer, uploadTryOnImagesServer} = require('../helpers/ImageStorage');
 
 router.get('/profile', authenticateToken, UsersController.profile);
 router.post('/update_info', authenticateToken, UsersController.updatePersonalInformation);
@@ -28,7 +28,6 @@ router.get('/view_address/:addressId', authenticateToken, UsersController.viewAd
 router.put('/update_address/:addressId', authenticateToken, UsersController.updateAddress);
 router.delete('/delete_address/:addressId', authenticateToken, UsersController.deleteAddress);
 
-
 router.post('/add_favorite', authenticateToken, UsersController.addWishlist);
 router.get('/view_favorite', authenticateToken, UsersController.viewWishlist);
 router.delete('/delete_favorite/:productId', authenticateToken, UsersController.removeWishlist);
@@ -46,5 +45,9 @@ router.delete('/remove_tryon_image_s3/:tryOnImageId', authenticateToken, UsersCo
 router.post('/upload_image_server', authenticateToken, uploadProfileImagesServer.single('image'), UsersController.uploadProfileImageServer);
 router.get('/view_image_server', authenticateToken, UsersController.viewProfileImageServer);
 router.delete('/remove_image_server', authenticateToken, UsersController.deleteProfileImageServer);
+
+router.post('/upload_tryon_image_server', authenticateToken, uploadTryOnImagesServer.single('image'), UsersController.uploadTryOnImageServer);
+router.get('/view_tryon_images_server', authenticateToken, UsersController.viewTryOnImagesServer);
+router.delete('/remove_tryon_image_server/:tryOnImageId', authenticateToken, UsersController.deleteTryOnImageServer);
 
 module.exports = router;

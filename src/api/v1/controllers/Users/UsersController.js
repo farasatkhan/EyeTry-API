@@ -903,3 +903,66 @@ exports.deleteProfileImageServer = async (req, res, next) => {
         res.status(500).json({message: "Internal Error occured while deleting image from server"})
     }
 }
+
+
+// Upload Try-On Images - Server
+exports.uploadTryOnImageServer = async (req, res, next) => {
+    try {
+
+        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+
+        const tryOnImage = await Users.findByIdAndUpdate(req.user.id, {$push: {tryOnImages: req.file.filename}});
+
+        if (!tryOnImage) return res.status(400).json({message: "Error occured while uploading image to db"});
+
+        res.status(200).json({message: "Try On Image uploaded successfully"});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while uploading images"});
+    }
+}
+
+// View Try-On Images - Server
+exports.viewTryOnImagesServer = async (req, res, next) => {
+    try {
+
+        const imageId = await Users.findById(req.user.id).select('tryOnImages');
+
+        if (imageId && imageId.tryOnImages.length === 0) return res.status(400).json({message: "No try on images are present."});
+
+        res.status(200).json(
+            {
+                tryonImages: imageId.tryOnImages,
+                locations: imageId.tryOnImages.map(image => '/uploads/tryon_images/' + image)
+            });
+    
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while viewing images"});
+    }
+}
+
+// Remove Try-On Images - Server
+exports.deleteTryOnImageServer = async (req, res, next) => {
+    try {
+
+        const removeTryOnImageId = req.params.tryOnImageId;
+
+        const userDoc = await Users.findById(req.user.id).select('tryOnImages');
+
+        if (userDoc && userDoc.tryOnImages.indexOf(removeTryOnImageId) === -1) return res.status(400).json({message: "No try on images are present."});
+
+        fs.unlinkSync('./public/uploads/tryon_images/' + removeTryOnImageId);
+
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {$pull: {tryOnImages: removeTryOnImageId}});
+
+        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+
+        res.status(200).json({message: "Image is removed from successfully."});
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while deleting images"});
+    }
+}
