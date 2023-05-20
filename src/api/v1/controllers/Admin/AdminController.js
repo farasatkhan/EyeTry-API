@@ -1,7 +1,71 @@
-var express = require('express');
-var router = express.Router();
-
+var AdminModel = require('../../models/Admin');
 var Giftcard = require('../../models/Giftcard');
+
+var AdminAuthController = require('../Auth/AdminAuthController');
+
+const { comparePassword, hashPassword, randomImageName } = require('../../helpers/hashing');
+
+/*
+    TODO: Store JWT tokens in the database once authentication is completed
+    Currently, we are only using the refreshTokens array to manage refresh tokens.
+*/
+var tokens = require('../../helpers/refreshToken');
+
+exports.profile = async (req, res, next) => {
+    try {
+        const isAdminExists = await AdminModel.findById(req.user.id).select("-password");
+
+        if (!isAdminExists) return res.status(400).json({message: "Admin account not found."});
+
+        res.status(200).json(isAdminExists);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured"});
+    }
+}
+
+exports.updatePersonalInformation = (req, res, next) => {
+    try {
+        const { firstname, lastname, email } = req.body;
+
+        AdminModel.updateOne(
+            {_id: req.user.id},
+            {$set: {firstName: firstname, lastName: lastname, email: email}}
+        ).then((updateResponse) => {
+
+            AdminModel.find({email: email}).then((response) => {
+                
+                // Generate new access token for user
+                const user = {
+                    id: response[0]._id.toString(),
+                }
+
+                const token = AdminAuthController.generateAccessToken(user);
+                const refreshToken = AdminAuthController.generateRefreshToken(user);
+            
+                tokens.addRefreshTokens(refreshToken);
+
+                res.status(200).json({
+                    user: response[0],
+                    accessToken: token,
+                    refreshToken: refreshToken,
+                    message: "Admin Details are Updated Successfully."
+                });
+
+            }).catch((error) => {
+                if (error) res.status(404).json({message: "error occured."});
+            });
+
+        }).catch((error) => {
+            if (error) res.status(404).json({message: "admin not found"});
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured"});
+    }
+}
 
 // Add to Giftcard [Admin]
 exports.addGiftcard = async (req, res, next) => {
@@ -24,6 +88,37 @@ exports.addGiftcard = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured while adding giftcards."});
+    }
+}
+
+exports.changePassword = async (req, res, next) => {
+    try {
+
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        const AdminDoc = await AdminModel.findById(req.user.id);
+
+        if (!AdminDoc) return res.status(400).json({message: "Invalid user id."});
+
+        const comparedPassword = comparePassword(currentPassword, AdminDoc.password);
+
+        if (!comparedPassword) return res.status(400).json({message: "Current password is incorrect."});
+
+        if (newPassword !== confirmPassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
+
+        const newHashedPassword = hashPassword(newPassword);
+
+        AdminModel.findByIdAndUpdate(req.user.id, {password: newHashedPassword}, {new: true}).then((response) => {
+
+            return res.status(204).json({message: "Admin password is updated successfully."});
+        }).catch((err) => {
+            console.log(err);
+            return res.status(403).json({message: "Admin don't have sufficient permissions to change password."});
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while changing user password."});
     }
 }
 
