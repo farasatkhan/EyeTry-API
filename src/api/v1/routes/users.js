@@ -1,12 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-var multer  = require('multer')
-var storage = multer.memoryStorage()
-var upload = multer({ storage: storage})
-
 var UsersController = require('../controllers/Users/UsersController');
+
 var { authenticateToken } = require('../controllers/Auth/AuthController');
+var { uploadMemStorageS3, uploadProfileImagesServer} = require('../helpers/ImageStorage');
 
 router.get('/profile', authenticateToken, UsersController.profile);
 
@@ -42,12 +40,16 @@ router.delete('/delete_favorite/:productId', authenticateToken, UsersController.
 
 router.post('/redeem_giftcard', authenticateToken, UsersController.redeemGiftcard);
 
-router.post('/upload_image', authenticateToken, upload.single('image'), UsersController.uploadProfileImage);
-router.get('/view_image', authenticateToken, UsersController.viewProfileImage);
-router.delete('/remove_image', authenticateToken, UsersController.deleteProfileImage);
+router.post('/upload_image_s3', authenticateToken, uploadMemStorageS3.single('image'), UsersController.uploadProfileImageS3);
+router.get('/view_image_s3', authenticateToken, UsersController.viewProfileImageS3);
+router.delete('/remove_image_s3', authenticateToken, UsersController.deleteProfileImageS3);
 
-router.post('/upload_tryon_image', authenticateToken, upload.single('image'), UsersController.uploadTryOnImage);
-router.get('/view_tryon_images', authenticateToken, UsersController.viewTryOnImages);
-router.delete('/remove_tryon_image/:tryOnImageId', authenticateToken, UsersController.deleteTryOnImage);
+router.post('/upload_tryon_image_s3', authenticateToken, uploadMemStorageS3.single('image'), UsersController.uploadTryOnImageS3);
+router.get('/view_tryon_images_s3', authenticateToken, UsersController.viewTryOnImagesS3);
+router.delete('/remove_tryon_image_s3/:tryOnImageId', authenticateToken, UsersController.deleteTryOnImageS3);
+
+router.post('/upload_image_server', authenticateToken, uploadProfileImagesServer.single('image'), UsersController.uploadProfileImageServer);
+router.get('/view_image_server', authenticateToken, UsersController.viewProfileImageServer);
+router.delete('/remove_image_server', authenticateToken, UsersController.deleteProfileImageServer);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 require('dotenv').config({ path: './src/config/.env' });
 
+var fs = require('fs');
+
 var express = require('express');
 var router = express.Router();
 
@@ -700,8 +702,8 @@ exports.redeemGiftcard = async (req, res, next) => {
     }
 }
 
-// Upload Profile Image
-exports.uploadProfileImage = async (req, res, next) => {
+// Upload Profile Image - S3
+exports.uploadProfileImageS3 = async (req, res, next) => {
     try {
 
         if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
@@ -724,8 +726,8 @@ exports.uploadProfileImage = async (req, res, next) => {
     }
 }
 
-// View Profile Image
-exports.viewProfileImage = async (req, res, next) => {
+// View Profile Image - S3
+exports.viewProfileImageS3 = async (req, res, next) => {
     try {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
@@ -744,8 +746,8 @@ exports.viewProfileImage = async (req, res, next) => {
     }
 }
 
-// Delete Profile Image
-exports.deleteProfileImage = async (req, res, next) => {
+// Delete Profile Image - S3
+exports.deleteProfileImageS3 = async (req, res, next) => {
     try {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
@@ -768,8 +770,8 @@ exports.deleteProfileImage = async (req, res, next) => {
     }
 }
 
-// Upload Try-On Images
-exports.uploadTryOnImage = async (req, res, next) => {
+// Upload Try-On Images - S3
+exports.uploadTryOnImageS3 = async (req, res, next) => {
     try {
 
         if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
@@ -792,8 +794,8 @@ exports.uploadTryOnImage = async (req, res, next) => {
     }
 }
 
-// View Try-On Images
-exports.viewTryOnImages = async (req, res, next) => {
+// View Try-On Images - S3
+exports.viewTryOnImagesS3 = async (req, res, next) => {
     try {
 
         const imageId = await Users.findById(req.user.id).select('tryOnImages');
@@ -812,8 +814,8 @@ exports.viewTryOnImages = async (req, res, next) => {
     }
 }
 
-// Remove Try-On Images
-exports.deleteTryOnImage = async (req, res, next) => {
+// Remove Try-On Images - S3
+exports.deleteTryOnImageS3 = async (req, res, next) => {
     try {
 
         const removeTryOnImageId = req.params.tryOnImageId;
@@ -835,5 +837,64 @@ exports.deleteTryOnImage = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "Internal Error occured while deleting images"});
+    }
+}
+
+// Upload Profile Image - Server
+exports.uploadProfileImageServer = async (req, res, next) => {
+    try {
+        
+        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+
+        const profilePicture = await Users.findByIdAndUpdate(req.user.id, {profilePicture: req.file.filename}, {new: true});
+
+        if (!profilePicture) return res.status(400).json({message: "Error occured while uploading image to db"});
+
+        res.status(200).json({message: "Image uploaded successfully"});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while uploading image to server"})
+    }
+}
+
+// View Profile Image - Server
+exports.viewProfileImageServer = async (req, res, next) => {
+    try {
+
+        const imageId = await Users.findById(req.user.id).select('profilePicture');
+
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+
+        res.status(200).json(
+            {
+                profilePicture: imageId.profilePicture,
+                location: '/uploads/profile_images/' + imageId.profilePicture
+            });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while viewing image from server"})
+    }
+}
+
+// Delete Profile Image - Server
+exports.deleteProfileImageServer = async (req, res, next) => {
+    try {
+        const imageId = await Users.findById(req.user.id).select('profilePicture');
+
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+
+        fs.unlinkSync('./public/uploads/profile_images/' + imageId.profilePicture);
+
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {profilePicture: ''});
+
+        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+
+        res.status(200).json({message: "Image is removed from successfully."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while deleting image from server"})
     }
 }

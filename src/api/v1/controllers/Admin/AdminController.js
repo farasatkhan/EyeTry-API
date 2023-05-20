@@ -3,7 +3,7 @@ var Giftcard = require('../../models/Giftcard');
 
 var AdminAuthController = require('../Auth/AdminAuthController');
 
-const { comparePassword, hashPassword, randomImageName } = require('../../helpers/hashing');
+const { comparePassword, hashPassword } = require('../../helpers/hashing');
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
