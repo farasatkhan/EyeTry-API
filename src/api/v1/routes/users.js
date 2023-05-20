@@ -7,15 +7,10 @@ var { authenticateToken } = require('../controllers/Auth/AuthController');
 var { uploadMemStorageS3, uploadProfileImagesServer} = require('../helpers/ImageStorage');
 
 router.get('/profile', authenticateToken, UsersController.profile);
-
 router.post('/update_info', authenticateToken, UsersController.updatePersonalInformation);
-
 router.post('/delete_account', authenticateToken, UsersController.deleteAccount);
-
 router.post('/change_password', authenticateToken, UsersController.changePassword);
-
 router.post('/forget_password', UsersController.forgetPassword);
-
 router.post('/reset_password', UsersController.resetPassword);
 
 router.post('/add_prescription', authenticateToken, UsersController.addPrescription);

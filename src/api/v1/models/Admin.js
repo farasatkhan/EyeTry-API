@@ -19,7 +19,8 @@ const adminSchema = new mongoose.Schema({
         required: true
     },
     profilePicture: {
-        type: String
+        type: String,
+        default: ''
     },
     role: {
         type: String,

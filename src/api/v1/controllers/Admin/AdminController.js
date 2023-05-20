@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var AdminModel = require('../../models/Admin');
 var Giftcard = require('../../models/Giftcard');
 
@@ -183,5 +185,64 @@ exports.deleteGiftcard = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured while deleting giftcards."});
+    }
+}
+
+// Upload Profile Image - Server
+exports.uploadProfileImageServer = async (req, res, next) => {
+    try {
+        
+        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+
+        const profilePicture = await AdminModel.findByIdAndUpdate(req.user.id, {profilePicture: req.file.filename}, {new: true});
+
+        if (!profilePicture) return res.status(400).json({message: "Error occured while uploading image to db"});
+
+        res.status(200).json({message: "Image uploaded successfully"});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while uploading image to server"})
+    }
+}
+
+// View Profile Image - Server
+exports.viewProfileImageServer = async (req, res, next) => {
+    try {
+
+        const imageId = await AdminModel.findById(req.user.id).select('profilePicture');
+
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+
+        res.status(200).json(
+            {
+                profilePicture: imageId.profilePicture,
+                location: '/uploads/profile_images/' + imageId.profilePicture
+            });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while viewing image from server"})
+    }
+}
+
+// Delete Profile Image - Server
+exports.deleteProfileImageServer = async (req, res, next) => {
+    try {
+        const imageId = await AdminModel.findById(req.user.id).select('profilePicture');
+
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+
+        fs.unlinkSync('./public/uploads/profile_images/' + imageId.profilePicture);
+
+        const removeFromUserDocs = await AdminModel.findByIdAndUpdate(req.user.id, {profilePicture: ''});
+
+        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+
+        res.status(200).json({message: "Image is removed from successfully."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal Error occured while deleting image from server"})
     }
 }
