@@ -8,6 +8,8 @@ var cors = require('cors');
 require('./src/api/v1/services/database');
 
 var AuthRouter = require('./src/api/v1/routes/auth');
+var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
+
 var usersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
 
@@ -36,6 +38,7 @@ app.use(cors({
 }));
 
 app.use('/auth', AuthRouter);
+app.use('/admin/auth', AdminAuthRouter);
 app.use('/users', usersRouter);
 app.use('/admin', AdminRouter);
 

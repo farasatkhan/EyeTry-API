@@ -1,13 +1,10 @@
 require('dotenv').config({ path: './src/config/.env' });
 
-var express = require('express');
 const jwt = require('jsonwebtoken');
-
-var router = express.Router();
 
 const { hashPassword, comparePassword } = require('../../helpers/hashing');
 
-var UsersModel = require('../../models/User');
+var AdminModel = require('../../models/Admin');
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
@@ -16,36 +13,39 @@ var UsersModel = require('../../models/User');
 var tokens = require('../../helpers/refreshToken');
 // const refreshTokens = [];
 
+
+/*
+    Admin Registration is only used for testing purposes. Admin cannot register account normally.
+*/
 exports.register = async (req, res, next) => {
     try {
-
-        // Check if user is already logged in
         const authorizationHeader = req.headers['authorization'];
         const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "User is logged in."});
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "Admin is logged in."});
 
         const {firstname, lastname, email, password, confirmpassword} = req.body;
 
-        const isUserAlreadyExists = await UsersModel.findOne({email: email});
+        const isAdminAlreadyExists = await AdminModel.findOne({email: email});
 
-        if (isUserAlreadyExists) return res.status(400).json({message: "User already exists."});
+        if (isAdminAlreadyExists) return res.status(400).json({message: "Admin already exists."});
 
         if (password !== confirmpassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
 
         const hashedPassword = hashPassword(password);
 
-        const createUser = await UsersModel.create({
+        const createAdmin = await AdminModel.create({
             firstName: firstname,
             lastName: lastname,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: "admin"
         });
 
-        if (!createUser) return res.status(400).json({message: "Unable to create an account."});
+        if (!createAdmin) return res.status(400).json({message: "Unable to create an account."});
 
-        const token = this.generateAccessToken(createUser);
-        const refreshToken = this.generateRefreshToken(createUser);
+        const token = this.generateAccessToken(createAdmin);
+        const refreshToken = this.generateRefreshToken(createAdmin);
         
         tokens.addRefreshTokens(refreshToken);
 
@@ -53,10 +53,10 @@ exports.register = async (req, res, next) => {
 
         res.status(201).json(
             {
-                user: createUser,
+                user: createAdmin,
                 accessToken: token,
                 refreshToken: refreshToken,
-                message: "User account is created."
+                message: "Admin account is created."
             }
         );
 
@@ -70,27 +70,26 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     try {
 
-        // Check if user is already logged in
         const authorizationHeader = req.headers['authorization'];
         const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
         console.log("Verify Auth Access:", this.verifyAccessToken(Authtoken));
         console.log("Verify Refresh Access:", this.verifyRefreshToken(Authtoken));
 
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "User is already logged in."});
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "Admin is already logged in."});
 
         const {email, password} = req.body;
 
-        const isUserExists = await UsersModel.findOne({email: email});
+        const isAdminExists = await AdminModel.findOne({email: email});
 
-        if (!isUserExists) return res.status(400).json({message: "User account not found."});
+        if (!isAdminExists) return res.status(400).json({message: "Admin account not found."});
 
-        const comparedPassword = comparePassword(password, isUserExists.password);
+        const comparedPassword = comparePassword(password, isAdminExists.password);
 
         if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
 
-        const token = this.generateAccessToken(isUserExists);
-        const refreshToken = this.generateRefreshToken(isUserExists);
+        const token = this.generateAccessToken(isAdminExists);
+        const refreshToken = this.generateRefreshToken(isAdminExists);
 
         tokens.addRefreshTokens(refreshToken);
 
@@ -98,10 +97,10 @@ exports.login = async (req, res, next) => {
 
         res.status(201).json(
             {
-                user: isUserExists,
+                user: isAdminExists,
                 accessToken: token,
                 refreshToken: refreshToken,
-                message: "User is logged in."
+                message: "Admin is logged in."
             }
         );
 
@@ -118,11 +117,11 @@ exports.logout = (req, res, next) => {
 };
 
 exports.generateAccessToken = (user) => {
-    return jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '60m'});
+    return jwt.sign({id: user.id}, process.env.ADMIN_ACCESS_TOKEN_SECRET, {expiresIn: '60m'});
 };
 
 exports.generateRefreshToken = (user) => {
-    return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.sign({id: user.id}, process.env.ADMIN_REFRESH_TOKEN_SECRET);
 }
 
 exports.generateNewAccessToken = (req, res, next) => {
@@ -134,7 +133,7 @@ exports.generateNewAccessToken = (req, res, next) => {
 
         if (!tokens.getRefreshTokens().includes(refreshToken)) return res.status(403).json({message: "Invalid refresh token."});
 
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        jwt.verify(refreshToken, process.env.ADMIN_REFRESH_TOKEN_SECRET, (err, user) => {
 
             if (err) return res.status(403).json({message: "Invalid refresh token is present."});
 
@@ -155,7 +154,7 @@ exports.authenticateToken = (req, res, next) => {
 
     if (token == null) return res.status(401).json({message: "No authorization header is present."});
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.ADMIN_ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.status(403).json({message: "Invalid Token."});
 
         req.user = user;
@@ -164,7 +163,7 @@ exports.authenticateToken = (req, res, next) => {
 };
 
 exports.verifyAccessToken = (token) => {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, res) => {
+    return jwt.verify(token, process.env.ADMIN_ACCESS_TOKEN_SECRET, (err, res) => {
         if (err) return false;
 
         return true;
@@ -172,7 +171,7 @@ exports.verifyAccessToken = (token) => {
 };
 
 exports.verifyRefreshToken = (refreshToken) => {
-    return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, res) => {
+    return jwt.verify(refreshToken, process.env.ADMIN_REFRESH_TOKEN_SECRET, (err, res) => {
         if (err) return false;
 
         return true;
