@@ -846,6 +846,11 @@ exports.uploadProfileImageServer = async (req, res, next) => {
         
         if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
 
+        const imageId = await Users.findById(req.user.id).select('profilePicture');
+
+        // If Profile Picture already exists then remove the old image.
+        if ((imageId && imageId.profilePicture)) fs.unlinkSync('./public/uploads/profile_images/' + imageId.profilePicture);
+
         const profilePicture = await Users.findByIdAndUpdate(req.user.id, {profilePicture: req.file.filename}, {new: true});
 
         if (!profilePicture) return res.status(400).json({message: "Error occured while uploading image to db"});
