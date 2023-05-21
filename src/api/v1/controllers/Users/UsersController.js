@@ -333,7 +333,7 @@ exports.updatePrescription = async (req, res, next) => {
 
         const UpdatedPrescription = await Prescription.findByIdAndUpdate(prescriptionId, updatedPrescription, {new: true});
 
-        if (!UpdatedPrescription) res.status(400).json({message: "400: Error occured while updating prescription."});
+        if (!UpdatedPrescription) return res.status(400).json({message: "400: Error occured while updating prescription."});
 
         res.status(200).json(UpdatedPrescription);
 
@@ -358,11 +358,11 @@ exports.deletePrescription = async (req, res, next) => {
 
         const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {prescriptions: prescriptionId}});
         
-        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing prescription from user."});
+        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing prescription from user."});
 
         const deletePrescription = await Prescription.findByIdAndDelete(prescriptionId);
 
-        if (!deletePrescription) res.status(400).json({message: "400: Error occured while removing prescription."});
+        if (!deletePrescription) return res.status(400).json({message: "400: Error occured while removing prescription."});
 
         res.status(204).json({message: "204: Prescription is removed."});
 
@@ -480,7 +480,7 @@ exports.updatePayment = async (req, res, next) => {
 
         const UpdatedPayment = await Payment.findByIdAndUpdate(paymentId, updatedPayment, {new: true});
 
-        if (!UpdatedPayment) res.status(400).json({message: "400: Error occured while updating payment."});
+        if (!UpdatedPayment) return res.status(400).json({message: "400: Error occured while updating payment."});
 
         res.status(200).json(UpdatedPayment);
 
@@ -504,11 +504,11 @@ exports.deletePayment = async (req, res, next) => {
 
         const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {payments: paymentId}});
         
-        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing payment method from user."});
+        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing payment method from user."});
 
         const deletePayment = await Payment.findByIdAndDelete(paymentId);
 
-        if (!deletePayment) res.status(400).json({message: "400: Error occured while removing payment method."});
+        if (!deletePayment) return res.status(400).json({message: "400: Error occured while removing payment method."});
 
         res.status(204).json({message: "204: Payment is removed."});
 
@@ -556,7 +556,7 @@ exports.viewAddress = async (req, res, next) => {
 
         const viewAddress = await Users.findById({ _id: req.user.id}).select({addressBook: { $elemMatch: { _id: addressId }}});
 
-        if (!viewAddress) res.status(404).json({message: "Error occured while viewing address in addressbook."});
+        if (!viewAddress) return res.status(404).json({message: "Error occured while viewing address in addressbook."});
 
         res.status(200).json(viewAddress);
 
@@ -607,7 +607,7 @@ exports.deleteAddress = async (req, res, next) => {
 
         const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {addressBook: { _id: addressBookId }}});
         
-        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing address from user."});
+        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing address from user."});
 
         res.status(204).json(removeFromUserDoc);
 
@@ -625,7 +625,7 @@ exports.addWishlist = async (req, res, next) => {
 
         const addedWishlistItem = await Users.findByIdAndUpdate({_id: req.user.id}, {$push: { wishlist: productId}});
 
-        if (!addedWishlistItem) res.status(400).json({message: "400: Error occured while adding item to users."});
+        if (!addedWishlistItem) return res.status(400).json({message: "400: Error occured while adding item to users."});
 
         res.status(200).json({message: "Product added to wishlist."});
         
@@ -643,7 +643,7 @@ exports.removeWishlist = async (req, res, next) => {
 
         const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {wishlist: productId}});
         
-        if (!removeFromUserDoc) res.status(400).json({message: "400: Error occured while removing item from wishlist from user."});
+        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing item from wishlist from user."});
 
         res.status(204).json(removeFromUserDoc);
 
@@ -662,7 +662,7 @@ exports.viewWishlist = async (req, res, next) => {
 
         const viewWishlistProducts = await Users.findById({ _id: req.user.id}).select('wishlist').populate('wishlist');
 
-        if (!viewWishlistProducts) res.status(404).json({message: "Error occured while viewing wishlist items."});
+        if (!viewWishlistProducts) return res.status(404).json({message: "Error occured while viewing wishlist items."});
 
         res.status(200).json(viewWishlistProducts);
 
@@ -736,7 +736,7 @@ exports.viewProfileImageS3 = async (req, res, next) => {
 
         const url = await S3Storage.downloadFile(imageId.profilePicture);
 
-        if (!url) res.status(400).json({message: "Error occured while viewing image from s3"});
+        if (!url) return res.status(400).json({message: "Error occured while viewing image from s3"});
 
         res.status(200).json({profilePicture: url});
         
@@ -756,11 +756,11 @@ exports.deleteProfileImageS3 = async (req, res, next) => {
 
         const removedImage = await S3Storage.deleteFile(imageId.profilePicture);
 
-        if (!removedImage) res.status(400).json({message: "Error occured while removing image from s3"});
+        if (!removedImage) return res.status(400).json({message: "Error occured while removing image from s3"});
 
         const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {profilePicture: ''});
 
-        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
 
         res.status(200).json({message: "Image is removed from successfully."});
         
@@ -804,7 +804,7 @@ exports.viewTryOnImagesS3 = async (req, res, next) => {
 
         const urls = await S3Storage.viewAllFiles(imageId.tryOnImages);
 
-        if (!urls) res.status(400).json({message: "Error occured while viewing image from s3"});
+        if (!urls) return res.status(400).json({message: "Error occured while viewing image from s3"});
 
         res.status(200).json({tryonImages: urls});
         
@@ -826,11 +826,11 @@ exports.deleteTryOnImageS3 = async (req, res, next) => {
 
         const removedImage = await S3Storage.deleteFile(removeTryOnImageId);
 
-        if (!removedImage) res.status(400).json({message: "Error occured while removing image from s3"});
+        if (!removedImage) return res.status(400).json({message: "Error occured while removing image from s3"});
 
         const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {$pull: {tryOnImages: removeTryOnImageId}});
 
-        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
 
         res.status(200).json({message: "Image is removed from successfully."});
         
@@ -957,7 +957,7 @@ exports.deleteTryOnImageServer = async (req, res, next) => {
 
         const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {$pull: {tryOnImages: removeTryOnImageId}});
 
-        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
 
         res.status(200).json({message: "Image is removed from successfully."});
         

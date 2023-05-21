@@ -83,7 +83,7 @@ exports.addGiftcard = async (req, res, next) => {
             expirationDate: expirationDate
         });
 
-        if (!AddedGiftcard) res.status(400).json({message: "400: Error occured while adding giftcards."});
+        if (!AddedGiftcard) return res.status(400).json({message: "400: Error occured while adding giftcards."});
 
         res.status(200).json(AddedGiftcard);
 
@@ -160,7 +160,7 @@ exports.updateGiftcard = async (req, res, next) => {
 
         const updatedGiftcard = await Giftcard.findByIdAndUpdate(giftcardId, newUpdatedGiftcard, {new: true});
 
-        if (!updatedGiftcard) res.status(400).json({message: "400: Error occured while updating giftcard."});
+        if (!updatedGiftcard) return res.status(400).json({message: "400: Error occured while updating giftcard."});
 
         res.status(200).json(updatedGiftcard);
 
@@ -178,7 +178,7 @@ exports.deleteGiftcard = async (req, res, next) => {
 
         const deleteGiftcard = await Giftcard.findByIdAndDelete(giftcardId);
 
-        if (!deleteGiftcard) res.status(400).json({message: "Giftcard does not exists."});
+        if (!deleteGiftcard) return res.status(400).json({message: "Giftcard does not exists."});
 
         res.status(204).json(deleteGiftcard);
 
@@ -242,7 +242,7 @@ exports.deleteProfileImageServer = async (req, res, next) => {
 
         const removeFromUserDocs = await AdminModel.findByIdAndUpdate(req.user.id, {profilePicture: ''});
 
-        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
 
         res.status(200).json({message: "Image is removed from successfully."});
 
