@@ -33,6 +33,21 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Prescription'
     }],
+    visionassessment: [{
+        testType: {
+            type: String,
+            required: true,
+        },
+        status: {
+            type: Boolean,
+            required: true
+        },
+        testDate: {
+            type: Date,
+            required: true,
+            default: new Date(),
+        }
+    }],
     payments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Payment'
