@@ -13,26 +13,19 @@ const frameSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    images: [{
-        type: String,
-        required: true
-    }],
     brand: {
         type: String,
-        required: true
     },
     type: {
         type: String,
-        required: true
     },
-    category: {
+    category: [{
         type: String,
         required: true
-    },
-    subcategory: {
+    }],
+    subcategory: [{
         type: String,
-        required: true
-    },
+    }],
     shortDescription: {
         type: String,
         required: true
@@ -43,28 +36,26 @@ const frameSchema = new mongoose.Schema({
     },
     tags: [{
         type: String,
-        required: true
+    }],
+    frameMaterial: [{
+        type: String,
+    }],
+    frameStyle: [{
+        type: String,
+    }],
+    frameColor: [{
+        type: String,
+    }],
+    frameSize: [{
+        type: String,
+    }],
+    images: [{
+        type: String,
     }],
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
     }],
-    frameMaterial: {
-        type: [String],
-        required: true
-    },
-    frameStyle: {
-        type: String,
-        required: true
-    },
-    frameColor: {
-        type: [String],
-        required: true
-    },
-    frameSize: {
-        type: [String],
-        required: true
-    }
 });
 
 const Frame = mongoose.model('Frame', frameSchema);

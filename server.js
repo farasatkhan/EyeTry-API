@@ -10,8 +10,9 @@ require('./src/api/v1/services/database');
 var AuthRouter = require('./src/api/v1/routes/auth');
 var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
 
-var usersRouter = require('./src/api/v1/routes/users');
+var UsersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
+var ProductRouter = require('./src/api/v1/routes/products');
 
 /*
     The goal of the test router is to facilite the testing of other routes.
@@ -40,8 +41,9 @@ app.use(cors({
 
 app.use('/auth', AuthRouter);
 app.use('/admin/auth', AdminAuthRouter);
-app.use('/users', usersRouter);
+app.use('/users', UsersRouter);
 app.use('/admin', AdminRouter);
+app.use('/products/', ProductRouter)
 
 /*
     The goal of the test router is to facilite the testing of other routes.
