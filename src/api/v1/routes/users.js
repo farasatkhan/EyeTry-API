@@ -50,4 +50,7 @@ router.post('/upload_tryon_image_server', authenticateToken, uploadTryOnImagesSe
 router.get('/view_tryon_images_server', authenticateToken, UsersController.viewTryOnImagesServer);
 router.delete('/remove_tryon_image_server/:tryOnImageId', authenticateToken, UsersController.deleteTryOnImageServer);
 
+router.post('/submit_vision_assessment_result', authenticateToken, UsersController.submitVisionAssessmentResult);
+router.get('/view_vision_assessment_result', authenticateToken, UsersController.viewVisionAssessmentResult);
+
 module.exports = router;

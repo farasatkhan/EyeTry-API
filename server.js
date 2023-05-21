@@ -17,6 +17,7 @@ var AdminRouter = require('./src/api/v1/routes/admin');
     The goal of the test router is to facilite the testing of other routes.
 */
 var testProductRouter = require('./test/routes/products');
+var testVisionAssessmentRouter = require('./test/routes/VisionAssessment');
 
 var app = express();
 
@@ -45,7 +46,8 @@ app.use('/admin', AdminRouter);
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
-app.use('/product', testProductRouter);
+app.use('/test/product', testProductRouter);
+app.use('/test/vision_assessment', testVisionAssessmentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

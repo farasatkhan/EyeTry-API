@@ -966,3 +966,47 @@ exports.deleteTryOnImageServer = async (req, res, next) => {
         res.status(500).json({message: "Internal Error occured while deleting images"});
     }
 }
+
+exports.submitVisionAssessmentResult = async (req, res, next) => {
+    try {
+
+        const { testType, status } = req.body;
+
+        const submitVisionAssessmentTest = await Users.findByIdAndUpdate(
+            {_id: req.user.id}, 
+            {
+                $push: {
+                    visionAssessments: {
+                        testType: testType,
+                        status: status
+                    }
+                }
+            }
+        );
+
+        if (!submitVisionAssessmentTest) return res.status(400).json({message: "400: Error occured while submitting vision assessment result."});
+
+        res.status(200).json({message: "Test Result Submitted."});
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal error occured in submitting vision assessment route."})
+    }
+}
+
+exports.viewVisionAssessmentResult = async (req, res, next) => {
+    try {
+
+        const visionAssessmentsResults = await Users.findById({_id: req.user.id}).select('visionAssessments');
+
+        if (!visionAssessmentsResults) return res.status(400).json({message: "400: Error occured while viewing vision assessment results"});
+
+        if (visionAssessmentsResults.visionAssessments.length <= 0) return res.status(200).json({message: "No vision assessment test results are present."})
+
+        res.status(200).json(visionAssessmentsResults);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Internal error occured in viewing vision assessment route."})
+    }
+}
