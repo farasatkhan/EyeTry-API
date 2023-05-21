@@ -13,22 +13,16 @@ const lensSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    images: [{
+    brand: {
+        type: String,
+    },
+    category: [{
         type: String,
         required: true
     }],
-    brand: {
+    subcategory: [{
         type: String,
-        required: true
-    },
-    category: {
-        type: [String],
-        required: true
-    },
-    subcategory: {
-        type: [String],
-        required: true
-    },
+    }],
     shortDescription: {
         type: String,
         required: true
@@ -39,20 +33,20 @@ const lensSchema = new mongoose.Schema({
     },
     tags: [{
         type: String,
-        required: true
+    }],
+    lensType: [{
+        type: String,
+    }],
+    lensCoating: [{
+        type: String,
+    }],
+    images: [{
+        type: String,
     }],
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
-    }],
-    lensType: {
-        type: String,
-        required: true
-    },
-    lensCoating: {
-        type: [String],
-        required: true
-    }
+    }]
 });
 
 const Lens = mongoose.model('Lens', lensSchema);
