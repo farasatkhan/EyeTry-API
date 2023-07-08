@@ -39,7 +39,7 @@ exports.profile = async (req, res, next) => {
 
 exports.updatePersonalInformation = (req, res, next) => {
     try {
-        const { firstname, lastname, email } = req.body;
+        const { firstName, lastName, email } = req.body;
 
         Users.updateOne(
             {_id: req.user.id},
@@ -415,6 +415,21 @@ exports.addPayment = (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured while adding payment."});
+    }
+}
+
+// view all payments
+exports.viewAllPayments = async (req, res, next) => {
+    try {
+        const user = await Users.findById(req.user.id).populate('payments');
+        
+        if (!user) return res.status(404).json({message: "Payment does not exists."});
+            
+        res.status(200).send(user.payments);
+    
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while viewing information."});
     }
 }
 

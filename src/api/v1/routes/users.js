@@ -19,6 +19,7 @@ router.put('/update_prescription/:prescriptionId', authenticateToken, UsersContr
 router.delete('/delete_prescription/:prescriptionId', authenticateToken, UsersController.deletePrescription);
 
 router.post('/add_payment', authenticateToken, UsersController.addPayment);
+router.get('/view_payments', authenticateToken, UsersController.viewAllPayments)
 router.get('/view_payment/:paymentId', authenticateToken, UsersController.viewPayment);
 router.put('/update_payment/:paymentId', authenticateToken, UsersController.updatePayment);
 router.delete('/delete_payment/:paymentId', authenticateToken, UsersController.deletePayment);
