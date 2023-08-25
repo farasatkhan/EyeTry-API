@@ -4,7 +4,8 @@ exports.addGlasses = async (req, res, next) => {
     try {
 
         const { 
-            name, sku, description, short_description, price, discount, type, meta_title, meta_description, meta_keywords, manufacturer, framematerial, frame_size, lenswidth, lensheight, totalwidth, bridgewidth, templelength, is_multifocal, face_shape, gender, single_vision, reading, progressive, bifocal, frame, no_prescription, transition, is_low_stock, is_out_of_stock, is_in_stock, available_qty, quantity, categories, coupons, colors, images} = req.body;
+            name, sku, description, short_description, price, discount, type, meta_title,
+            meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, single_vision, reading, progressive, bifocal, frame, no_prescription, transition, available_qty, quantity, categories, coupons} = req.body;
 
         /* 
             The request contains various types of information. The text will be saved as it is, to store
@@ -16,7 +17,49 @@ exports.addGlasses = async (req, res, next) => {
         */
 
         const Glasses = await GlassesModel.create({
-
+            name: name,
+            sku: sku,
+            description: description,
+            short_description: short_description,
+            price: price,
+            discount: discount,
+            type: type,
+            meta: {
+                title: meta_title,
+                keywords: meta_keywords,
+                description: meta_description,
+            },
+            manufacturer: manufacturer,
+            frame_information: {
+                frame_material: frame_material,
+                frame_size: frame_size,
+                colors: {}
+            },
+            lens_information: {
+                lens_width: lens_width,
+                lens_height: lens_height,
+                total_width: total_width,
+                bridge_width: bridge_width,
+                temple_length: temple_length,
+                is_multifocal: is_multifocal,
+                single_vision: single_vision,
+                reading: reading,
+                progressive: progressive,
+                bifocal: bifocal,
+                frame: frame,
+                no_prescription: no_prescription,
+                transition: transition
+            },
+            person_information: {
+                face_shape: face_shape,
+                genders: genders
+            },
+            stock: {
+                is_in_stock: true,
+                quantity: quantity
+            },
+            categories: categories,
+            coupons: coupons
         });
 
         if (!Glasses) return res.status(400).json(

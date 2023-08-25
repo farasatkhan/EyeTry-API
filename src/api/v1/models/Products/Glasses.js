@@ -7,15 +7,12 @@ const Glasses = new mongoose.Schema({
     },
     sku: {
         type: String,
-        required: true
     },
     description: {
         type: String,
-        required: true
     },
     short_description: {
         type: String,
-        required: true
     },
     price: {
         type: Number,
@@ -23,7 +20,6 @@ const Glasses = new mongoose.Schema({
     },
     discount: {
         type: Number,
-        required: true
     },
     type: {
         type: String,
@@ -32,133 +28,105 @@ const Glasses = new mongoose.Schema({
     meta: {
         title: {
             type: String,
-            required: true
         },
         keywords: [{
             type: String,
-            required: true
         }],
         description: {
             type: String,
-            required: true
         },
     },
     manufacturer: {
         type: String,
-        required: true
     },
     frame_information: {
-        framematerial: [{
+        frame_material: [{
             type: String,
-            required: true
         }],
         frame_size: [{
             type: String,
-            required: true
         }],
         colors: [{
             color: {
                 type: String,
-                required: true
             },
             available_qty: {
                 type: Number,
-                required: true
             },
             images: {
                 small: [{
                     type: String,
-                    required: true
                 }],
                 medium: [{
                     type: String,
-                    required: true
                 }],
                 large: [{
                     type: String,
-                    required: true
                 }],
             },
         }],
     },
     lens_information: {
-        lenswidth: {
+        lens_width: {
             type: Number,
-            required: true
         },
-        lensheight: {
+        lens_height: {
             type: Number,
-            required: true
         },
-        totalwidth: {
+        total_width: {
             type: Number,
-            required: true
         },
-        bridgewidth: {
+        bridge_width: {
             type: Number,
-            required: true
         },
-        templelength: {
+        temple_length: {
             type: Number,
-            required: true
         },
         is_multifocal: {
             type: Boolean,
-            required: true
+        },
+        single_vision: {
+            type: Number,
+        },
+        reading: {
+            type: Number,
+        },
+        progressive: {
+            type: Number,
+        },
+        bifocal: {
+            type: Number,
+        },
+        frame: {
+            type: Number,
+        },
+        no_prescription: {
+            type: Number,
+        },
+        transition: {
+            type: Number,
         },
     },
     person_information: {
         face_shape: [{
             type: String,
-            required: true
         }],
-        gender: [{
+        genders: [{
             type: String,
-            required: true
         }],
-    },
-    insurance: {
-        single_vision: {
-            type: Number,
-            required: true
-        },
-        reading: {
-            type: Number,
-            required: true
-        },
-        progressive: {
-            type: Number,
-            required: true
-        },
-        bifocal: {
-            type: Number,
-            required: true
-        },
-        frame: {
-            type: Number,
-            required: true
-        },
-        no_prescription: {
-            type: Number,
-            required: true
-        },
-        transition: {
-            type: Number,
-            required: true
-        },
     },
     stock: {
         is_low_stock: {
             type: Boolean,
-            required: true
+            default: false
         },
         is_out_of_stock: {
             type: Boolean,
-            required: true
+            default: false
         },
         is_in_stock: {
             type: Boolean,
-            required: true
+            default: false
         },
         quantity: {
             type: Number,
@@ -168,7 +136,6 @@ const Glasses = new mongoose.Schema({
     reviews: {
         total_reviews: {
             type: Number,
-            required: true
         },
         reviews: [{
             type: mongoose.Schema.Types.ObjectId,
@@ -177,18 +144,15 @@ const Glasses = new mongoose.Schema({
     },
     categories: [{
         type: String,
-        required: true
     }],
     coupons: [{
         code: {
             type: String,
-            required: true
         },
         price: {
             type: Number,
-            required: true
         },
-    }, ],
+    }],
 });
 
 module.exports = mongoose.model('Glasses', Glasses);
