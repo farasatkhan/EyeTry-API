@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Glasses = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        // required: true
     },
     sku: {
         type: String,
@@ -14,16 +14,22 @@ const Glasses = new mongoose.Schema({
     short_description: {
         type: String,
     },
-    price: {
-        type: Number,
-        required: true
+    priceInfo: {
+        price: {
+            type: Number,
+            // required: true
+        },
+        currency: {
+            type: String,
+            // required: true
+        }
     },
     discount: {
         type: Number,
     },
     type: {
         type: String,
-        required: true
+        // required: true
     },
     meta: {
         title: {
@@ -46,7 +52,7 @@ const Glasses = new mongoose.Schema({
         frame_size: [{
             type: String,
         }],
-        colors: [{
+        frame_variants: [{
             color: {
                 type: String,
             },
@@ -84,28 +90,7 @@ const Glasses = new mongoose.Schema({
         },
         is_multifocal: {
             type: Boolean,
-        },
-        single_vision: {
-            type: Number,
-        },
-        reading: {
-            type: Number,
-        },
-        progressive: {
-            type: Number,
-        },
-        bifocal: {
-            type: Number,
-        },
-        frame: {
-            type: Number,
-        },
-        no_prescription: {
-            type: Number,
-        },
-        transition: {
-            type: Number,
-        },
+        }
     },
     person_information: {
         face_shape: [{
@@ -130,7 +115,7 @@ const Glasses = new mongoose.Schema({
         },
         quantity: {
             type: Number,
-            required: true
+            // required: true
         },
     },
     reviews: {

@@ -4,16 +4,21 @@ exports.addGlasses = async (req, res, next) => {
     try {
 
         const { 
-            name, sku, description, short_description, price, discount, type, meta_title,
-            meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, single_vision, reading, progressive, bifocal, frame, no_prescription, transition, quantity, categories, coupons} = req.body;
+            name, sku, description, short_description, price, currency, discount, type, meta_title,
+            meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, quantity, categories, coupons, variants} = req.body;
 
         /* 
-            The request contains various types of information. The text will be saved as it is, to store
-            the images, the following requirements must be met:
+            The request contains various types of information. The text will be saved as it is, 
+
+            variants will contains color, quantity.
+            
+            images. we have to create different sizes for the images. to store the images, the following requirements must be met:
 
             1. only png, jpeg are allowed.
             2. check for any viruses. (optional)
-            2. take the image, create 3 versions of it for small, medium and larger screen.
+            3. take the image, create 3 versions of it for small, medium and larger screen.
+            4. create variants using colors and images.
+
         */
 
         const Glasses = await GlassesModel.create({
@@ -21,7 +26,10 @@ exports.addGlasses = async (req, res, next) => {
             sku: sku,
             description: description,
             short_description: short_description,
-            price: price,
+            priceInfo: {
+                price: price,
+                currency: currency
+            },
             discount: discount,
             type: type,
             meta: {
@@ -33,7 +41,7 @@ exports.addGlasses = async (req, res, next) => {
             frame_information: {
                 frame_material: frame_material,
                 frame_size: frame_size,
-                colors: {}
+                frame_variants: []
             },
             lens_information: {
                 lens_width: lens_width,
@@ -42,13 +50,6 @@ exports.addGlasses = async (req, res, next) => {
                 bridge_width: bridge_width,
                 temple_length: temple_length,
                 is_multifocal: is_multifocal,
-                single_vision: single_vision,
-                reading: reading,
-                progressive: progressive,
-                bifocal: bifocal,
-                frame: frame,
-                no_prescription: no_prescription,
-                transition: transition
             },
             person_information: {
                 face_shape: face_shape,
@@ -64,7 +65,7 @@ exports.addGlasses = async (req, res, next) => {
 
         if (!Glasses) return res.status(400).json(
             {
-                message: "400: Error occured while adding frame information"
+                message: "400: Error occured while adding glasses"
             });
 
         res.status(200).json(
