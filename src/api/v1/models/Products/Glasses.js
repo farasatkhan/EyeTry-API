@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
-const glasses = new mongoose.Schema({
-    id: {
-        type: Number,
-        required: true
-    },
+const Glasses = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -38,10 +34,10 @@ const glasses = new mongoose.Schema({
             type: String,
             required: true
         },
-        keyword: {
+        keywords: [{
             type: String,
             required: true
-        },
+        }],
         description: {
             type: String,
             required: true
@@ -63,6 +59,10 @@ const glasses = new mongoose.Schema({
         colors: [{
             color: {
                 type: String,
+                required: true
+            },
+            available_qty: {
+                type: Number,
                 required: true
             },
             images: {
@@ -160,10 +160,6 @@ const glasses = new mongoose.Schema({
             type: Boolean,
             required: true
         },
-        available_qty: {
-            type: Number,
-            required: true
-        },
         quantity: {
             type: Number,
             required: true
@@ -195,4 +191,4 @@ const glasses = new mongoose.Schema({
     }, ],
 });
 
-module.exports = mongoose.model('glasses', glasses);
+module.exports = mongoose.model('Glasses', Glasses);
