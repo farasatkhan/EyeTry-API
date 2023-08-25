@@ -1,11 +1,11 @@
-var GlassesModel = require('../../Products/v1/Glasses');
+var GlassesModel = require('../../../models/Products/Glasses');
 
 exports.addGlasses = async (req, res, next) => {
     try {
 
         const { 
             name, sku, description, short_description, price, discount, type, meta_title,
-            meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, single_vision, reading, progressive, bifocal, frame, no_prescription, transition, available_qty, quantity, categories, coupons} = req.body;
+            meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, single_vision, reading, progressive, bifocal, frame, no_prescription, transition, quantity, categories, coupons} = req.body;
 
         /* 
             The request contains various types of information. The text will be saved as it is, to store
@@ -69,25 +69,25 @@ exports.addGlasses = async (req, res, next) => {
 
         res.status(200).json(
             {
-                frameId: Glasses._id,
-                message: "Frame is added successfully."
+                GlassesId: Glasses._id,
+                message: "Glasses are added successfully."
             }
         );
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured when adding products."})
+        res.status(500).json({message: "500: Error occured when adding glasses."})
     }
 }
 
 exports.viewGlasses = async (req, res, next) => {
-
+    res.status(200).json({message: "200: Success"})
 }
 
 exports.updateGlasses = async (req, res, next) => {
-
+    res.status(200).json({message: "200: Success"})
 }
 
 exports.deleteGlasses = async (req, res, next) => {
-
+    res.status(200).json({message: "200: Success"})
 }

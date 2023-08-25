@@ -13,6 +13,7 @@ var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
 var UsersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
 var ProductRouter = require('./src/api/v1/routes/products');
+var GlassesRouter = require('./src/api/v1/routes/Products/Glasses');
 
 /*
     The goal of the test router is to facilite the testing of other routes.
@@ -44,6 +45,8 @@ app.use('/admin/auth', AdminAuthRouter);
 app.use('/users', UsersRouter);
 app.use('/admin', AdminRouter);
 app.use('/products/', ProductRouter)
+
+app.use('/products/v1/', GlassesRouter)
 
 /*
     The goal of the test router is to facilite the testing of other routes.
