@@ -18,7 +18,6 @@ git clone https://github.com/your-username/EyeTry-API.git
 
 ```
 cd EyeTry-API
-
 ```
 
 3. Install the project dependencies using npm:
