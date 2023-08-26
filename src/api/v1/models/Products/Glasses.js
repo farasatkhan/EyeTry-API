@@ -11,9 +11,6 @@ const Glasses = new mongoose.Schema({
     description: {
         type: String,
     },
-    short_description: {
-        type: String,
-    },
     priceInfo: {
         price: {
             type: Number,

@@ -1,10 +1,10 @@
-var GlassesModel = require('../../../models/Products/Glasses');
+var GlassesModel = require('../../../models/Products/Glasses.js');
 
 exports.addGlasses = async (req, res, next) => {
     try {
 
         const { 
-            name, sku, description, short_description, price, currency, discount, type, meta_title,
+            name, sku, description, price, currency, discount, type, meta_title,
             meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, quantity, categories, coupons, variants} = req.body;
 
         /* 
@@ -25,7 +25,6 @@ exports.addGlasses = async (req, res, next) => {
             name: name,
             sku: sku,
             description: description,
-            short_description: short_description,
             priceInfo: {
                 price: price,
                 currency: currency
