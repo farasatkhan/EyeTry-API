@@ -76,47 +76,6 @@ exports.addGlasses = async (req, res, next) => {
             stock: stock(stock_status)
         });
 
-        // const Glasses = await GlassesModel.create({
-        //     name: name,
-        //     sku: sku,
-        //     description: description,
-        //     priceInfo: {
-        //         price: price,
-        //         currency: currency
-        //     },
-        //     discount: discount,
-        //     type: type,
-        //     meta: {
-        //         title: meta_title,
-        //         keywords: meta_keywords,
-        //         description: meta_description,
-        //     },
-        //     manufacturer: manufacturer,
-        //     frame_information: {
-        //         frame_material: frame_material,
-        //         frame_size: frame_size,
-        //         frame_variants: []
-        //     },
-        //     lens_information: {
-        //         lens_width: lens_width,
-        //         lens_height: lens_height,
-        //         total_width: total_width,
-        //         bridge_width: bridge_width,
-        //         temple_length: temple_length,
-        //         is_multifocal: is_multifocal,
-        //     },
-        //     person_information: {
-        //         face_shape: face_shape,
-        //         genders: genders
-        //     },
-        //     stock: {
-        //         is_in_stock: true,
-        //         quantity: quantity
-        //     },
-        //     categories: categories,
-        //     coupons: coupons
-        // });
-
         if (!Glasses) return res.status(400).json(
             {
                 message: "400: Error occured while adding glasses"
