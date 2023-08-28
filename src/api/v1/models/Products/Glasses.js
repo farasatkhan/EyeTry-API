@@ -117,10 +117,10 @@ const Glasses = new mongoose.Schema({
             type: Boolean,
             default: false
         },
-        quantity: {
-            type: Number,
-            // required: true
-        },
+        // quantity: {
+        //     type: Number,
+        //     // required: true
+        // },
     },
     reviews: {
         total_reviews: {
@@ -133,14 +133,6 @@ const Glasses = new mongoose.Schema({
     },
     categories: [{
         type: String,
-    }],
-    coupons: [{
-        code: {
-            type: String,
-        },
-        price: {
-            type: Number,
-        },
     }],
 });
 
