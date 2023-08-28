@@ -70,6 +70,9 @@ const Glasses = new mongoose.Schema({
         }],
     },
     lens_information: {
+        measurement_type: {
+            type: String
+        },
         lens_width: {
             type: Number,
         },

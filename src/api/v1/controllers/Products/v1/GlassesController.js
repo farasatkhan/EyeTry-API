@@ -4,8 +4,9 @@ exports.addGlasses = async (req, res, next) => {
     try {
 
         const { 
-            name, sku, description, price, currency, discount, type, meta_title,
-            meta_description, meta_keywords, manufacturer, frame_material, frame_size, lens_width, lens_height, total_width, bridge_width, temple_length, is_multifocal, face_shape, genders, quantity, categories, coupons, variants} = req.body;
+            name, sku, description, price, currency, discount, type, categories, meta_title, meta_keywords,
+            meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
+            bridge_width, temple_length, is_multifocal} = req.body;
 
         /* 
             The request contains various types of information. The text will be saved as it is, 
@@ -31,6 +32,7 @@ exports.addGlasses = async (req, res, next) => {
             },
             discount: discount,
             type: type,
+            categories: categories,
             meta: {
                 title: meta_title,
                 keywords: meta_keywords,
@@ -40,27 +42,58 @@ exports.addGlasses = async (req, res, next) => {
             frame_information: {
                 frame_material: frame_material,
                 frame_size: frame_size,
-                frame_variants: []
             },
             lens_information: {
+                measurement_type: measurement_type,
                 lens_width: lens_width,
                 lens_height: lens_height,
                 total_width: total_width,
                 bridge_width: bridge_width,
                 temple_length: temple_length,
                 is_multifocal: is_multifocal,
-            },
-            person_information: {
-                face_shape: face_shape,
-                genders: genders
-            },
-            stock: {
-                is_in_stock: true,
-                quantity: quantity
-            },
-            categories: categories,
-            coupons: coupons
+            }
         });
+
+        // const Glasses = await GlassesModel.create({
+        //     name: name,
+        //     sku: sku,
+        //     description: description,
+        //     priceInfo: {
+        //         price: price,
+        //         currency: currency
+        //     },
+        //     discount: discount,
+        //     type: type,
+        //     meta: {
+        //         title: meta_title,
+        //         keywords: meta_keywords,
+        //         description: meta_description,
+        //     },
+        //     manufacturer: manufacturer,
+        //     frame_information: {
+        //         frame_material: frame_material,
+        //         frame_size: frame_size,
+        //         frame_variants: []
+        //     },
+        //     lens_information: {
+        //         lens_width: lens_width,
+        //         lens_height: lens_height,
+        //         total_width: total_width,
+        //         bridge_width: bridge_width,
+        //         temple_length: temple_length,
+        //         is_multifocal: is_multifocal,
+        //     },
+        //     person_information: {
+        //         face_shape: face_shape,
+        //         genders: genders
+        //     },
+        //     stock: {
+        //         is_in_stock: true,
+        //         quantity: quantity
+        //     },
+        //     categories: categories,
+        //     coupons: coupons
+        // });
 
         if (!Glasses) return res.status(400).json(
             {
