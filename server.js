@@ -16,6 +16,7 @@ var ProductRouter = require('./src/api/v1/routes/products');
 
 var GlassesRouter = require('./src/api/v1/routes/Products/Glasses');
 var CategoryRouter = require('./src/api/v1/routes/Products/Category');
+var GiftcardsRouter = require('./src/api/v1/routes/Products/Giftcards');
 
 
 /*
@@ -51,6 +52,7 @@ app.use('/products/', ProductRouter)
 
 app.use('/products/v1/glasses', GlassesRouter);
 app.use('/products/v1/category', CategoryRouter);
+app.use('/products/v1/giftcards', GiftcardsRouter);
 
 /*
     The goal of the test router is to facilite the testing of other routes.
