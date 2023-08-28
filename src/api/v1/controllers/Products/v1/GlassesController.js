@@ -6,7 +6,7 @@ exports.addGlasses = async (req, res, next) => {
         const { 
             name, sku, description, price, currency, discount, type, categories, meta_title, meta_keywords,
             meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
-            bridge_width, temple_length, is_multifocal} = req.body;
+            bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status} = req.body;
 
         /* 
             The request contains various types of information. The text will be saved as it is, 
@@ -21,6 +21,23 @@ exports.addGlasses = async (req, res, next) => {
             4. create variants using colors and images.
 
         */
+
+        console.log("stock_status:", stock_status)
+
+        const stock = (stock_status) => {
+            if (stock_status === "in_stock") {
+                return { is_in_stock: true }
+
+            } else if (stock_status === "out_of_stock") {
+                return { is_out_of_stock: true }
+
+            } else if (stock_status === "to_be_announced") {
+                return { is_to_be_announced: true }
+
+            } else if (stock_status === "low_stock") {
+                return { is_low_stock: true }
+            }
+        };
 
         const Glasses = await GlassesModel.create({
             name: name,
@@ -51,7 +68,12 @@ exports.addGlasses = async (req, res, next) => {
                 bridge_width: bridge_width,
                 temple_length: temple_length,
                 is_multifocal: is_multifocal,
-            }
+            },
+            person_information: {
+                face_shape: face_shape,
+                genders: genders
+            },
+            stock: stock(stock_status)
         });
 
         // const Glasses = await GlassesModel.create({

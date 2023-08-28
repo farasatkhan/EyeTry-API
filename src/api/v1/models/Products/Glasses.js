@@ -113,6 +113,10 @@ const Glasses = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        is_to_be_announced: {
+            type: Boolean,
+            default: false
+        },
         quantity: {
             type: Number,
             // required: true
