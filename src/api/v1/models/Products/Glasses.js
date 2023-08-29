@@ -53,7 +53,7 @@ const Glasses = new mongoose.Schema({
             color: {
                 type: String,
             },
-            available_qty: {
+            quantity: {
                 type: Number,
             },
             images: {

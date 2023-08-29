@@ -6,7 +6,7 @@ exports.addGlasses = async (req, res, next) => {
         const { 
             name, sku, description, price, currency, discount, type, categories, meta_title, meta_keywords,
             meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
-            bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status} = req.body;
+            bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status, frame_variants} = req.body;
 
         /* 
             The request contains various types of information. The text will be saved as it is, 
@@ -59,6 +59,7 @@ exports.addGlasses = async (req, res, next) => {
             frame_information: {
                 frame_material: frame_material,
                 frame_size: frame_size,
+                frame_variants: frame_variants
             },
             lens_information: {
                 measurement_type: measurement_type,
