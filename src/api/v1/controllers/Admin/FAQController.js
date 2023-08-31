@@ -31,7 +31,7 @@ exports.addFAQ = async (req, res, next) => {
 exports.viewFAQ = async (req, res, next) => {
     try {
 
-        const faqResult = await FAQModel.find({}, {__v: 0, createdAt: 0});
+        const faqResult = await FAQModel.find({}, {__v: 0, createdAt: 0}).sort({ _id: -1 });
 
         if (!faqResult) return res.status(400).json(
             {
