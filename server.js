@@ -54,7 +54,7 @@ app.use('/products/', ProductRouter)
 app.use('/products/v1/glasses', GlassesRouter);
 app.use('/products/v1/category', CategoryRouter);
 app.use('/products/v1/giftcards', GiftcardsRouter);
-app.use('/products/v1/faq', FAQRouter);
+app.use('/v1/faq', FAQRouter);
 
 /*
     The goal of the test router is to facilite the testing of other routes.
