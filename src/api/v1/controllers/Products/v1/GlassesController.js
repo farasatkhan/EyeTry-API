@@ -1,3 +1,7 @@
+const sharp = require('sharp');
+const path = require('path');
+var { randomImageName } = require('../../../helpers/hashing');
+
 var GlassesModel = require('../../../models/Products/Glasses.js');
 
 exports.addGlasses = async (req, res, next) => {
@@ -21,8 +25,6 @@ exports.addGlasses = async (req, res, next) => {
             4. create variants using colors and images.
 
         */
-
-        console.log("stock_status:", stock_status)
 
         const stock = (stock_status) => {
             if (stock_status === "in_stock") {
@@ -104,5 +106,84 @@ exports.updateGlasses = async (req, res, next) => {
 }
 
 exports.deleteGlasses = async (req, res, next) => {
+    res.status(200).json({message: "200: Success"})
+}
+
+exports.addProductImages = async (req, res, next) => {
+    try {
+        const files = req.files;
+
+        if (!files || files.length === 0) {
+          return res.status(400).json({ message: 'No files uploaded.' });
+        }
+    
+        const filesLocation = [];
+
+        const outputPath = './public/uploads/products/glasses/';
+        
+        for (const file of files) {
+          const buffer = file.buffer;
+          const outputFileName = randomImageName() + '.webp';
+          const location = path.join(outputPath, outputFileName);
+
+          filesLocation.push(location);
+
+          await sharp(buffer)
+            .webp({ quality: 80 })
+            .toFile(location);
+        }
+
+        colors = req.body.color;
+        quantities = req.body.quantity;
+        imageCounts = req.body.image_count;
+
+        const newFrameVariants = [];
+
+        let imageIndex = 0;
+
+        for (let i = 0; i < colors.length; i++) {
+            const imgCount = imageCounts[i];
+            const images = [];
+
+            for (let j = 0; j < imgCount; j++) {
+                images.push(filesLocation[imageIndex]);
+                imageIndex++;
+            }
+
+            const variant = {
+                color: colors[i],
+                quantity: quantities[i],
+                images: images
+            }
+
+            newFrameVariants.push(variant);
+        }
+
+        console.log(newFrameVariants);
+        
+        const glassesId = req.params.glassesId;
+
+        const updateFrameVaraints = await GlassesModel.findByIdAndUpdate(
+            glassesId,
+            { $set: { 'frame_information.frame_variants': newFrameVariants } },
+            { new: true }
+        );
+    
+        res.status(200).json({ 
+            glasses: updateFrameVaraints,
+            message: '200: Success'}
+        );
+
+      } catch (error) {
+        console.error('Error processing images:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+      }
+}
+
+exports.viewProductImages = async (req, res, next) => {
+    res.status(200).json({message: "200: Success"})
+}
+
+exports.deleteProductImages = async (req, res, next) => {
     res.status(200).json({message: "200: Success"})
 }

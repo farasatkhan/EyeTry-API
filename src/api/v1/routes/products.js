@@ -10,7 +10,7 @@ var { uploadProductImagesServer } = require('../helpers/ImageStorage');
 router.post('/frame', authenticateToken, ProductController.addFrame);
 router.put('/frame/:frameId', authenticateToken, ProductController.updateFrame);
 router.delete('/frame/:frameId', authenticateToken, ProductController.deleteFrame);
-
+ 
 router.put(
     '/frame/images/:frameId', 
     authenticateToken,

@@ -27,17 +27,31 @@ var storageDiskTryOnImages = multer.diskStorage({
 });
 
 // Upload Product Images to Server
-var storageDiskProductImages = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, './public/uploads/products_images/')
+// var storageDiskProductImages = multer.diskStorage({
+//     destination: function (req, file, callback) {
+//         callback(null, './public/uploads/products/glasses/')
+//     },
+//     filename: function (req, file, callback) {
+//         callback(null, randomImageName() + path.extname(file.originalname))
+//     }
+// });
+
+var memoryStorageProductImages = multer.memoryStorage();
+
+exports.uploadProductImagesServer = multer({
+    storage: memoryStorageProductImages,
+    fileFilter: function (req, file, callback) {
+        var fileExtension = path.extname(file.originalname);
+        if(fileExtension !== '.png' && fileExtension !== '.jpg' && fileExtension !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        callback(null, true)
     },
-    filename: function (req, file, callback) {
-        callback(null, randomImageName() + path.extname(file.originalname))
+    limits:{
+        fileSize: 10 * 1024 * 1024
     }
 });
 
 exports.uploadProfileImagesServer = multer({storage: storageDiskProfilePicture});
 exports.uploadTryOnImagesServer = multer({storage: storageDiskTryOnImages});
-exports.uploadProductImagesServer = multer({storage: storageDiskProductImages});
-
 exports.uploadMemStorageS3 = multer({ storage: storageMem});

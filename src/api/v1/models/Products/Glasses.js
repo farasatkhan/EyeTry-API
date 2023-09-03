@@ -56,17 +56,7 @@ const Glasses = new mongoose.Schema({
             quantity: {
                 type: Number,
             },
-            images: {
-                small: [{
-                    type: String,
-                }],
-                medium: [{
-                    type: String,
-                }],
-                large: [{
-                    type: String,
-                }],
-            },
+            images: [],
         }],
     },
     lens_information: {
