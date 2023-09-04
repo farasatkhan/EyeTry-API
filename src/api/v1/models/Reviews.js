@@ -5,11 +5,19 @@ const reviewSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    text: {
+    order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
+    },
+    user_review_title: {
+        type:String,
+        required: true
+    },
+    user_review_description: {
         type: String,
         required: true
     },
-    rating: {
+    stars: {
         type: Number,
         required: true
     },
