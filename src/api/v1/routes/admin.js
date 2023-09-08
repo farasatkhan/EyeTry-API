@@ -6,9 +6,9 @@ var AdminController = require('../controllers/Admin/AdminController');
 var { authenticateToken } = require('../controllers/Auth/AdminAuthController');
 var { uploadProfileImagesServer } = require('../helpers/ImageStorage');
 
-router.get('/profile', authenticateToken, AdminController.profile);
-router.post('/update_info', authenticateToken, AdminController.updatePersonalInformation);
-router.post('/change_password', authenticateToken, AdminController.changePassword);
+router.get('/profile', AdminController.profile);
+router.put('/profile/:adminId', AdminController.updatePersonalInformation);
+router.put('/profile/:adminId/password/', AdminController.changePassword);
 
 router.post('/upload_image_server', authenticateToken, uploadProfileImagesServer.single('image'), AdminController.uploadProfileImageServer);
 router.get('/view_image_server', authenticateToken, AdminController.viewProfileImageServer);

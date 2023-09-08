@@ -15,7 +15,11 @@ var tokens = require('../../helpers/refreshToken');
 
 exports.profile = async (req, res, next) => {
     try {
-        const isAdminExists = await AdminModel.findById(req.user.id).select("-password");
+        // hardcoded temporarily.
+        const adminId = "64fb260e0b041204eb4a174f";
+        const isAdminExists = await AdminModel.findById(adminId).select("-password -role");
+
+        // const isAdminExists = await AdminModel.findById(req.user.id).select("-password -role");
 
         if (!isAdminExists) return res.status(400).json({message: "Admin account not found."});
 
@@ -29,29 +33,30 @@ exports.profile = async (req, res, next) => {
 
 exports.updatePersonalInformation = (req, res, next) => {
     try {
-        const { firstname, lastname, email } = req.body;
+        const { firstName, lastName, email } = req.body;
 
         AdminModel.updateOne(
-            {_id: req.user.id},
-            {$set: {firstName: firstname, lastName: lastname, email: email}}
+            // {_id: req.user.id},
+            {_id: req.params.adminId},
+            {$set: {firstName: firstName, lastName: lastName, email: email}}
         ).then((updateResponse) => {
 
             AdminModel.find({email: email}).then((response) => {
                 
                 // Generate new access token for user
-                const user = {
-                    id: response[0]._id.toString(),
-                }
+                // const user = {
+                //     id: response[0]._id.toString(),
+                // }
 
-                const token = AdminAuthController.generateAccessToken(user);
-                const refreshToken = AdminAuthController.generateRefreshToken(user);
+                // const token = AdminAuthController.generateAccessToken(user);
+                // const refreshToken = AdminAuthController.generateRefreshToken(user);
             
-                tokens.addRefreshTokens(refreshToken);
+                // tokens.addRefreshTokens(refreshToken);
 
                 res.status(200).json({
                     user: response[0],
-                    accessToken: token,
-                    refreshToken: refreshToken,
+                    // accessToken: token,
+                    // refreshToken: refreshToken,
                     message: "Admin Details are Updated Successfully."
                 });
 
@@ -96,9 +101,16 @@ exports.addGiftcard = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
     try {
 
+        const adminId = req.params.adminId;
+
+        console.log(adminId);
+
         const { currentPassword, newPassword, confirmPassword } = req.body;
 
-        const AdminDoc = await AdminModel.findById(req.user.id);
+        const AdminDoc = await AdminModel.findById(adminId);
+        // const AdminDoc = await AdminModel.findById(req.user.id);
+
+        console.log("found admin doc: ", AdminDoc);
 
         if (!AdminDoc) return res.status(400).json({message: "Invalid user id."});
 
@@ -110,7 +122,9 @@ exports.changePassword = async (req, res, next) => {
 
         const newHashedPassword = hashPassword(newPassword);
 
-        AdminModel.findByIdAndUpdate(req.user.id, {password: newHashedPassword}, {new: true}).then((response) => {
+        console.log(newHashedPassword);
+
+        AdminModel.findByIdAndUpdate(adminId, {password: newHashedPassword}, {new: true}).then((response) => {
 
             return res.status(204).json({message: "Admin password is updated successfully."});
         }).catch((err) => {
