@@ -23,11 +23,7 @@ const giftCardSchema = new mongoose.Schema({
     },
     expirationDate: {
         type: Date
-    },
-    usedBy: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    }
 });
 
 module.exports = mongoose.model('GiftCard', giftCardSchema);

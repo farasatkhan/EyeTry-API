@@ -14,9 +14,9 @@ router.post('/upload_image_server', authenticateToken, uploadProfileImagesServer
 router.get('/view_image_server', authenticateToken, AdminController.viewProfileImageServer);
 router.delete('/remove_image_server', authenticateToken, AdminController.deleteProfileImageServer);
 
-router.post('/add_giftcard', authenticateToken, AdminController.addGiftcard);
-router.get('/view_giftcard', authenticateToken, AdminController.viewGiftcard);
-router.put('/update_giftcard/:giftcardId', authenticateToken, AdminController.updateGiftcard);
-router.delete('/delete_giftcard/:giftcardId', authenticateToken, AdminController.deleteGiftcard);
+router.post('/giftcard', AdminController.addGiftcard);
+router.get('/giftcard', AdminController.viewGiftcard);
+router.put('/giftcard/:giftcardId', AdminController.updateGiftcard);
+router.delete('/giftcard/:giftcardId', AdminController.deleteGiftcard);
 
 module.exports = router;

@@ -19,10 +19,10 @@ var tokens = require('../../helpers/refreshToken');
 */
 exports.register = async (req, res, next) => {
     try {
-        const authorizationHeader = req.headers['authorization'];
-        const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
+        // const authorizationHeader = req.headers['authorization'];
+        // const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "Admin is logged in."});
+        // if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "Admin is logged in."});
 
         const {firstname, lastname, email, password, confirmpassword} = req.body;
 
@@ -44,18 +44,18 @@ exports.register = async (req, res, next) => {
 
         if (!createAdmin) return res.status(400).json({message: "Unable to create an account."});
 
-        const token = this.generateAccessToken(createAdmin);
-        const refreshToken = this.generateRefreshToken(createAdmin);
+        // const token = this.generateAccessToken(createAdmin);
+        // const refreshToken = this.generateRefreshToken(createAdmin);
         
-        tokens.addRefreshTokens(refreshToken);
+        // tokens.addRefreshTokens(refreshToken);
 
-        res.set('Authorization', `Bearer ${token}`);
+        // res.set('Authorization', `Bearer ${token}`);
 
         res.status(201).json(
             {
                 user: createAdmin,
-                accessToken: token,
-                refreshToken: refreshToken,
+                // accessToken: token,
+                // refreshToken: refreshToken,
                 message: "Admin account is created."
             }
         );

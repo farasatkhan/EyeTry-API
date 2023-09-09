@@ -16,7 +16,7 @@ var tokens = require('../../helpers/refreshToken');
 exports.profile = async (req, res, next) => {
     try {
         // hardcoded temporarily.
-        const adminId = "64fb260e0b041204eb4a174f";
+        const adminId = "64fb40e2734ac0a4df233e4e";
         const isAdminExists = await AdminModel.findById(adminId).select("-password -role");
 
         // const isAdminExists = await AdminModel.findById(req.user.id).select("-password -role");
@@ -74,30 +74,6 @@ exports.updatePersonalInformation = (req, res, next) => {
     }
 }
 
-// Add to Giftcard [Admin]
-exports.addGiftcard = async (req, res, next) => {
-    try {
-
-        const { code, value, currency, status, expirationDate } = req.body;
-
-        const AddedGiftcard = await Giftcard.create({
-            code: code,
-            value: value,
-            currency: currency,
-            status: status,
-            expirationDate: expirationDate
-        });
-
-        if (!AddedGiftcard) return res.status(400).json({message: "400: Error occured while adding giftcards."});
-
-        res.status(200).json(AddedGiftcard);
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "500: Error occured while adding giftcards."});
-    }
-}
-
 exports.changePassword = async (req, res, next) => {
     try {
 
@@ -126,7 +102,7 @@ exports.changePassword = async (req, res, next) => {
 
         AdminModel.findByIdAndUpdate(adminId, {password: newHashedPassword}, {new: true}).then((response) => {
 
-            return res.status(204).json({message: "Admin password is updated successfully."});
+            return res.status(200).json({message: "Password is updated successfully."});
         }).catch((err) => {
             console.log(err);
             return res.status(403).json({message: "Admin don't have sufficient permissions to change password."});
@@ -135,6 +111,30 @@ exports.changePassword = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "500: Error occured while changing user password."});
+    }
+}
+
+// Add to Giftcard [Admin]
+exports.addGiftcard = async (req, res, next) => {
+    try {
+
+        const { code, value, currency, status, expirationDate } = req.body;
+
+        const AddedGiftcard = await Giftcard.create({
+            code: code,
+            value: value,
+            currency: currency,
+            status: status,
+            expirationDate: expirationDate
+        });
+
+        if (!AddedGiftcard) return res.status(400).json({message: "400: Error occured while adding giftcards."});
+
+        res.status(200).json(AddedGiftcard);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while adding giftcards."});
     }
 }
 
