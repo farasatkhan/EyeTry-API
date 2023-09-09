@@ -181,14 +181,15 @@ exports.updateGiftcard = async (req, res, next) => {
 
         const giftcardId = req.params.giftcardId;
 
-        const { code, value, currency, status, expirationDate } = req.body;
+        const { code, amount, status, note, customerEmail, expirationDate } = req.body;
 
         const newUpdatedGiftcard = {
             code: code,
-            value: value,
-            currency: currency,
+            value: amount.price,
+            currency: amount.currency,
             status: status,
-            expirationDate: expirationDate
+            expirationDate: expirationDate,
+            note: note
         }
 
         const updatedGiftcard = await Giftcard.findByIdAndUpdate(giftcardId, newUpdatedGiftcard, {new: true});
