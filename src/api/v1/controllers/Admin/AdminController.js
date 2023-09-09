@@ -156,6 +156,24 @@ exports.viewGiftcard = (req, res, next) => {
     }
 }
 
+// View Giftcards [Admin]
+exports.viewParticularGiftcard = (req, res, next) => {
+    try {
+
+        const giftcardId = req.params.giftcardId;
+
+        Giftcard.findOne({_id: giftcardId}).then((response) => {
+            res.status(200).json(response);
+        }).catch((error) => {
+            res.status(400).json({message: "500: Error occured while viewing giftcards."});
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while viewing giftcards."});
+    }
+}
+
 
 // Update Giftcards [Admin]
 exports.updateGiftcard = async (req, res, next) => {

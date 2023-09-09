@@ -16,6 +16,7 @@ router.delete('/remove_image_server', authenticateToken, AdminController.deleteP
 
 router.post('/giftcard', AdminController.addGiftcard);
 router.get('/giftcard', AdminController.viewGiftcard);
+router.get('/giftcard/:giftcardId', AdminController.viewParticularGiftcard);
 router.put('/giftcard/:giftcardId', AdminController.updateGiftcard);
 router.delete('/giftcard/:giftcardId', AdminController.deleteGiftcard);
 
