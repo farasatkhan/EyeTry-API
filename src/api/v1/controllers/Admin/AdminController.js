@@ -118,19 +118,20 @@ exports.changePassword = async (req, res, next) => {
 exports.addGiftcard = async (req, res, next) => {
     try {
 
-        const { code, value, currency, status, expirationDate } = req.body;
+        const { code, amount, status, note, customerEmail, expirationDate } = req.body;
 
         const AddedGiftcard = await Giftcard.create({
             code: code,
-            value: value,
-            currency: currency,
+            value: amount.price,
+            currency: amount.currency,
             status: status,
-            expirationDate: expirationDate
+            expirationDate: expirationDate,
+            note: note
         });
 
         if (!AddedGiftcard) return res.status(400).json({message: "400: Error occured while adding giftcards."});
 
-        res.status(200).json(AddedGiftcard);
+        res.status(200).json({ message: 'Giftcard is added successfully.' });
 
     } catch (error) {
         console.log(error);

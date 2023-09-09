@@ -15,8 +15,8 @@ const giftCardSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'expired'],
-        default: 'active'
+        enum: ['Active', 'Expired'],
+        default: 'Active'
     },
     note: {
         type: String
