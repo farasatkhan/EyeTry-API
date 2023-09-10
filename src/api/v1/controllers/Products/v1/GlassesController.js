@@ -99,7 +99,26 @@ exports.addGlasses = async (req, res, next) => {
 
 exports.viewGlassesList = async (req, res, next) => {
     try {
-        const productList = await GlassesModel.find({}, {__v: 0}).populate("").sort({ _id: -1 });
+        const productList = await GlassesModel.find({}, {__v: 0}).sort({ _id: -1 });
+
+        if (!productList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching glasses"
+        });
+
+        res.status(200).json(productList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching glasses"})
+    }
+}
+
+exports.viewParticularGlasses = async (req, res, next) => {
+    try {
+        const glassesId = req.params.glassesId;
+
+        const productList = await GlassesModel.find({_id: glassesId}, {__v: 0}).sort({ _id: -1 });
 
         if (!productList) return res.status(400).json(
         {
@@ -123,7 +142,7 @@ exports.updateGlasses = async (req, res, next) => {
             meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
             bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status, frame_variants} = req.body;
 
-            
+
         const stock = (stock_status) => {
             if (stock_status === "in_stock") {
                 return { is_in_stock: true }
@@ -181,7 +200,10 @@ exports.updateGlasses = async (req, res, next) => {
 
         if (!updatedProductInfo) return res.status(400).json({message: "400: Error occured while updating product."});
 
-        res.status(200).json(updatedProductInfo);
+        res.status(200).json({
+            products: updatedProductInfo,
+            message: "Information is updated successfully."
+        });
 
     } catch (error) {
         console.log(error);

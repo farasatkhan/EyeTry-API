@@ -7,6 +7,7 @@ var { uploadProductImagesServer } = require('../../helpers/ImageStorage');
 
 router.post('/', GlassesController.addGlasses);
 router.get('/', GlassesController.viewGlassesList);
+router.get('/:glassesId', GlassesController.viewParticularGlasses);
 router.put('/:glassesId', GlassesController.updateGlasses);
 router.delete('/:glassesId', GlassesController.deleteGlasses);
 
