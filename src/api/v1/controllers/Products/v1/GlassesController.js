@@ -97,8 +97,21 @@ exports.addGlasses = async (req, res, next) => {
     }
 }
 
-exports.viewGlasses = async (req, res, next) => {
-    res.status(200).json({message: "200: Success"})
+exports.viewGlassesList = async (req, res, next) => {
+    try {
+        const productList = await GlassesModel.find({}, {__v: 0}).populate("").sort({ _id: -1 });
+
+        if (!productList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching glasses"
+        });
+
+        res.status(200).json(productList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching glasses"})
+    }
 }
 
 exports.updateGlasses = async (req, res, next) => {
@@ -106,7 +119,20 @@ exports.updateGlasses = async (req, res, next) => {
 }
 
 exports.deleteGlasses = async (req, res, next) => {
-    res.status(200).json({message: "200: Success"})
+    const glassesId = req.params.glassesId;
+
+    try {
+        const deletedProduct = await GlassesModel.findByIdAndDelete(glassesId);
+    
+        if (!deletedProduct) {
+          return res.status(404).json({ message: 'glasses not found' });
+        }
+    
+        res.status(200).json({ message: 'glasses deleted successfully' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while deleting the glasses' });
+      }
 }
 
 exports.addProductImages = async (req, res, next) => {
@@ -126,7 +152,9 @@ exports.addProductImages = async (req, res, next) => {
           const outputFileName = randomImageName() + '.webp';
           const location = path.join(outputPath, outputFileName);
 
-          filesLocation.push(location);
+          const saveFileLocation = path.join('/uploads/products/glasses/', outputFileName);
+
+          filesLocation.push(saveFileLocation);
 
           await sharp(buffer)
             .webp({ quality: 80 })

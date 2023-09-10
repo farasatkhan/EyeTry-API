@@ -112,11 +112,11 @@ const Glasses = new mongoose.Schema({
         //     // required: true
         // },
     },
-    reviews: {
+    reviewsInformation: {
         total_reviews: {
             type: Number,
         },
-        reviews: [{
+        user_reviews: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Reviews'
         }],
