@@ -118,7 +118,7 @@ exports.viewParticularGlasses = async (req, res, next) => {
     try {
         const glassesId = req.params.glassesId;
 
-        const productList = await GlassesModel.find({_id: glassesId}, {__v: 0}).sort({ _id: -1 });
+        const productList = await GlassesModel.findOne({_id: glassesId}, {__v: 0}).sort({ _id: -1 });
 
         if (!productList) return res.status(400).json(
         {
