@@ -107,10 +107,6 @@ const Glasses = new mongoose.Schema({
             type: Boolean,
             default: false
         },
-        // quantity: {
-        //     type: Number,
-        //     // required: true
-        // },
     },
     reviewsInformation: {
         total_reviews: {
