@@ -14,6 +14,15 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    phone: {
+        type: String,
+    },
+    city: {
+        type: String,
+    },
+    country: {
+        type: String,
+    },
     password: {
         type: String,
         required: true
@@ -33,6 +42,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Prescription'
     }],
+    status: {
+        type: String,
+        default: "Active"
+    },
     visionAssessments: [{
         testType: {
             type: String,

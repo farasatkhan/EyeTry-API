@@ -20,4 +20,8 @@ router.get('/giftcard/:giftcardId', AdminController.viewParticularGiftcard);
 router.put('/giftcard/:giftcardId', AdminController.updateGiftcard);
 router.delete('/giftcard/:giftcardId', AdminController.deleteGiftcard);
 
+router.post('/create_test_user', AdminController.registerTestUser);
+router.get('/users', AdminController.getAllUsers);
+router.get('/orders', AdminController.getAllOrders);
+
 module.exports = router;

@@ -2,6 +2,8 @@ var fs = require('fs');
 
 var AdminModel = require('../../models/Admin');
 var Giftcard = require('../../models/Giftcard');
+var UsersModel = require('../../models/User');
+var OrdersModel = require('../../models/Order');
 
 var AdminAuthController = require('../Auth/AdminAuthController');
 
@@ -283,5 +285,74 @@ exports.deleteProfileImageServer = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "Internal Error occured while deleting image from server"})
+    }
+}
+
+
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        const usersList = await UsersModel.find({}, {__v: 0, password: 0, payments: 0}).sort({ _id: -1 });
+
+        if (!usersList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching users"
+        });
+
+        res.status(200).json(usersList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching users"})
+    }
+}
+
+exports.getAllOrders = async (req, res, next) => {
+    try {
+        const allOrdersList = await OrdersModel.find({}, {__v: 0, }).sort({ _id: -1 });
+
+        if (!allOrdersList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching orders"
+        });
+
+        res.status(200).json(allOrdersList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching orders"})
+    }
+}
+
+// This is created for testing purposes only
+exports.registerTestUser = async (req, res, next) => {
+    try {
+
+        const {firstname, lastname, email, password, confirmpassword, phone, status, city, country} = req.body;
+
+        const hashedPassword = hashPassword(password);
+
+        const createUser = await UsersModel.create({
+            firstName: firstname,
+            lastName: lastname,
+            email: email,
+            password: hashedPassword,
+            phone: phone,
+            city: city, 
+            country: country,
+            status: status
+        });
+
+        if (!createUser) return res.status(400).json({message: "Unable to create an account."});
+
+        res.status(201).json(
+            {
+                user: createUser,
+                message: "User account is created."
+            }
+        );
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "error occured during account creation."});
     }
 }
