@@ -43,8 +43,18 @@ const userSchema = new mongoose.Schema({
         ref: 'Prescription'
     }],
     status: {
-        type: String,
-        default: "Active"
+        user_status: {
+            type: String,
+            default: "Active"
+        },
+        is_banned: {
+            banned_until: {
+                type: String,
+            },
+            banned_reason: {
+                type: String
+            }
+        }
     },
     visionAssessments: [{
         testType: {
