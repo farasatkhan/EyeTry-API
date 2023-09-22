@@ -356,3 +356,56 @@ exports.registerTestUser = async (req, res, next) => {
         res.status(500).json({message: "error occured during account creation."});
     }
 }
+
+// Ban User
+exports.banUser = async (req, res, next) => {
+    const {userId, banned_until, banned_reason} = req.body;
+
+    try {
+        const updatedUserData = await UsersModel.findByIdAndUpdate(userId, 
+            {
+                status: {
+                    user_status: "Banned", 
+                    is_banned: 
+                    {
+                        banned_until:  banned_until,
+                        banned_reason: banned_reason
+                    }
+                }
+            }, {new:true});
+
+        if (!updatedUserData) {
+            return res.status(404).json({ message: 'user not found' });
+        }
+
+        res.status(200).json({ message: 'User is banned'});
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while banning user' });
+    }
+}
+
+exports.unbanUser = async (req, res, next) => {
+    const {userId} = req.body;
+
+    try {
+        const updatedUserData = await UsersModel.findByIdAndUpdate(userId, 
+            {
+                status: {
+                    user_status: "Active", 
+                    is_banned: null
+                }
+            }, {new:true});
+
+        if (!updatedUserData) {
+            return res.status(404).json({ message: 'user not found' });
+        }
+
+        res.status(200).json({ message: 'User is unbanned'});
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'An error occurred while unbanning the user'})
+    }
+}

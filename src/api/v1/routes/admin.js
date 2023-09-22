@@ -24,4 +24,7 @@ router.post('/create_test_user', AdminController.registerTestUser);
 router.get('/users', AdminController.getAllUsers);
 router.get('/orders', AdminController.getAllOrders);
 
+router.put('/user/ban', AdminController.banUser);
+router.put('/user/unban', AdminController.unbanUser);
+
 module.exports = router;
