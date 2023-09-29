@@ -53,9 +53,9 @@ exports.addGlasses = async (req, res, next) => {
             type: type,
             categories: categories,
             meta: {
-                title: meta_title,
-                keywords: meta_keywords,
-                description: meta_description,
+                meta_title: meta_title,
+                meta_keywords: meta_keywords,
+                meta_description: meta_description,
             },
             manufacturer: manufacturer,
             frame_information: {
@@ -170,9 +170,9 @@ exports.updateGlasses = async (req, res, next) => {
             type: type,
             categories: categories,
             meta: {
-                title: meta_title,
-                keywords: meta_keywords,
-                description: meta_description,
+                meta_title: meta_title,
+                meta_keywords: meta_keywords,
+                meta_description: meta_description,
             },
             manufacturer: manufacturer,
             frame_information: {

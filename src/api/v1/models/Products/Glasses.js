@@ -29,13 +29,13 @@ const Glasses = new mongoose.Schema({
         // required: true
     },
     meta: {
-        title: {
+        meta_title: {
             type: String,
         },
-        keywords: [{
+        meta_keywords: [{
             type: String,
         }],
-        description: {
+        meta_description: {
             type: String,
         },
     },
