@@ -20,8 +20,6 @@ exports.addGlasses = async (req, res, next) => {
             images. we have to create different sizes for the images. to store the images, the following requirements must be met:
 
             1. only png, jpeg are allowed.
-            2. check for any viruses. (optional)
-            3. take the image, create 3 versions of it for small, medium and larger screen.
             4. create variants using colors and images.
 
         */

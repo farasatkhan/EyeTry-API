@@ -5,6 +5,8 @@ var Giftcard = require('../../models/Giftcard');
 var UsersModel = require('../../models/User');
 var OrdersModel = require('../../models/Order');
 
+const { sendEmail } = require('../../services/EmailService');
+
 var AdminAuthController = require('../Auth/AdminAuthController');
 
 const { comparePassword, hashPassword } = require('../../helpers/hashing');
@@ -132,6 +134,19 @@ exports.addGiftcard = async (req, res, next) => {
         });
 
         if (!AddedGiftcard) return res.status(400).json({message: "400: Error occured while adding giftcards."});
+
+        console.log(customerEmail);
+
+        // Send an email to the user
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+        const inputDate = new Date(expirationDate);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        const formattedDate = inputDate.toLocaleDateString('en-US', options);
+
+        if (emailRegex.test(customerEmail)) {
+            await sendEmail(code, formattedDate, customerEmail);
+        }
 
         res.status(200).json({ message: 'Giftcard is added successfully.' });
 
