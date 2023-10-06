@@ -18,6 +18,7 @@ var GlassesRouter = require('./src/api/v1/routes/Products/Glasses');
 var CategoryRouter = require('./src/api/v1/routes/Products/Category');
 var FAQRouter = require('./src/api/v1/routes/FAQ/FAQ');
 var ReviewsRouter = require('./src/api/v1/routes/Products/Reviews');
+var OrderRouter = require('./src/api/v1/routes/order');
 
 
 /*
@@ -38,12 +39,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const allowedOrigins = ['http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000'];
+
 app.use(cors({
-  origin: 'http://localhost:5000',
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
   allowedHeaders: ['Authorization', 'Content-Type']
 }));
+
 
 app.use('/auth', AuthRouter);
 app.use('/admin/auth', AdminAuthRouter);
@@ -55,6 +59,7 @@ app.use('/products/v1/glasses', GlassesRouter);
 app.use('/products/v1/category', CategoryRouter);
 app.use('/v1/faq', FAQRouter);
 app.use('/products/v1/reviews', ReviewsRouter);
+app.use('/products/v1/order', OrderRouter);
 
 /*
     The goal of the test router is to facilite the testing of other routes.

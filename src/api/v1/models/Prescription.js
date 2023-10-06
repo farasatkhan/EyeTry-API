@@ -3,107 +3,47 @@ const mongoose = require('mongoose');
 const prescriptionInfoSchema = new mongoose.Schema({
     prescriptionName: {
         type: String,
-        required: true
     },
     prescriptionType: {
         type: String,
-        required: true
-    },
-    birthYear: {
-        type: Date,
-        required: true
     },
     dateOfPrescription: {
         type: Date,
-        required: true
     },
-    renewalReminderDate: {
-        type: Date,
-        required: true
-    },
-    singleOrDualPD: {
+    pdType: {
         type: String,
         required: true
-    },
-    pdInformation: {
-        left: {
-            leftPD: {
-                type: Number,
-                required: true
-            },
-            sphere: {
-                type: Number,
-                required: true
-            },
-            cylinder: {
-                type: Number,
-                required: true
-            },
-            axis: {
-                type: Number,
-                required: true
-            }
-        },
-        right: {
-            rightPD: {
-                type: Number,
-                required: true
-            },
-            sphere: {
-                type: Number,
-                required: true
-            },
-            cylinder: {
-                type: Number,
-                required: true
-            },
-            axis: {
-                type: Number,
-                required: true
-            }
-        },
-        nvadd: {
-            type: Number
-        }
-    },
-    prismProperties: {
-        left: {
-            prismHorizontal: {
-                type: Number,
-                required: true
-            },
-            prismVertical: {
-                type: Number,
-                required: true
-            },
-            baseDirectionHorizontal: {
-                type: String,
-                required: true
-            },
-            baseDirectionVertical: {
-                type: String,
-                required: true
-            },
-        },
-        right: {
-            prismHorizontal: {
-                type: Number,
-                required: true
-            },
-            prismVertical: {
-                type: Number,
-                required: true
-            },
-            baseDirectionHorizontal: {
-                type: String,
-                required: true
-            },
-            baseDirectionVertical: {
-                type: String,
-                required: true
-            },
-        },
-    },
+      },
+      pdOneNumber: {
+        type: Number,
+        default: null
+      },
+      pdLeftNumber: {
+        type: Number,
+        default: null
+      },
+      pdRightNumber: {
+        type: Number,
+        default: null
+      },
+      rightEyeOD: {
+        SPH: String,
+        CYL: String,
+        Axis: String,
+        Prism: String,
+        Base: String
+      },
+      leftEyeOS: {
+        SPH: String,
+        CYL: String,
+        Axis: String,
+        Prism: String,
+        Base: String
+      },
+      birthYear: {
+        type: Number,
+        required: true
+      }
 });
 
 module.exports = mongoose.model('Prescription', prescriptionInfoSchema);
