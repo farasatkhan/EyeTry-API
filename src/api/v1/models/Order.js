@@ -67,9 +67,47 @@ const OrderSchema = new mongoose.Schema({
     ],
 
     totalPrice: {
-        type: Number,
+        type: String,
         required: true
     },
+
+    paymentMethod : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Payment'
+    },
+
+    shippingAddress: {
+        name: {
+            type: String,
+            required: true
+        },
+        phone: {
+            type: String,
+            required: true
+        },
+        address: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        country: {
+            type: String,
+            required: true
+        },
+        zipCode: {
+            type: String,
+            required: true
+        },
+    },  
+    
+    // orderDate: {     
+    //     type: Date,
+    //     default: Date.now,
+    // },
+
 
 });
 
