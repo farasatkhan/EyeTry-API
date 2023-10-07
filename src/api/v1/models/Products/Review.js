@@ -9,6 +9,10 @@ const reviewSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'
     },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Glasses'
+    },
     user_review_title: {
         type:String,
         required: true

@@ -111,6 +111,7 @@ const Glasses = new mongoose.Schema({
     reviewsInformation: {
         total_reviews: {
             type: Number,
+            default: 0
         },
         user_reviews: [{
             type: mongoose.Schema.Types.ObjectId,

@@ -49,18 +49,18 @@ const OrderSchema = new mongoose.Schema({
               pdRightNumber: Number,
               birthYear: Number,
               leftEyeOS: {
-                  SPH: String,
-                  CYL: String,
-                  Axis: String,
-                  Prism: String,
-                  Base: String,
+                  SPH: Number,
+                  CYL: Number,
+                  Axis: Number,
+                  Prism: Number,
+                  Base: Number,
               },
               rightEyeOD: {
-                  SPH: String,
-                  CYL: String,
-                  Axis: String,
-                  Prism: String,
-                  Base: String,
+                  SPH: Number,
+                  CYL: Number,
+                  Axis: Number,
+                  Prism: Number,
+                  Base: Number,
               },
           },
     }
@@ -103,11 +103,10 @@ const OrderSchema = new mongoose.Schema({
         },
     },  
     
-    // orderDate: {     
-    //     type: Date,
-    //     default: Date.now,
-    // },
-
+    orderDate: {     
+        type: Date,
+        default: Date.now,
+    },
 
 });
 

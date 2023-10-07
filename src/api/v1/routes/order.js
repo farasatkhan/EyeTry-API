@@ -5,5 +5,6 @@ var { authenticateToken } = require('../controllers/Auth/AuthController');
 var OrderController = require('../controllers/Products/v1/OrdersController');
 
 router.post('/checkout', authenticateToken, OrderController.checkout);
+router.get('/viewAllOrders/:userId', authenticateToken, OrderController.viewAllOrders);
 
 module.exports = router;
