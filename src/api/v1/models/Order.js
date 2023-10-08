@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
+const CounterModel = require('./OrderCounter'); // Import the Counter schema
 
 const OrderSchema = new mongoose.Schema({
+
+    order_no: {
+        type: Number,
+        unique: true
+    },
 
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -108,6 +114,24 @@ const OrderSchema = new mongoose.Schema({
         default: Date.now,
     },
 
+});
+
+// Middleware to auto-increment order_no
+OrderSchema.pre('save', async function () {
+    const order = this;
+
+    // Find and increment the sequence_value in the Counter collection
+    try {
+        const counter = await CounterModel.findOneAndUpdate(
+            { _id: 'order_no' }, // Change to 'order_no'
+            { $inc: { sequence_value: 1 } },
+            { new: true, upsert: true }
+        );
+
+        order.order_no = counter.sequence_value; // Change to 'order_no'
+    } catch (err) {
+        throw err; // Handle the error appropriately
+    }
 });
 
 // Create the Mongoose model
