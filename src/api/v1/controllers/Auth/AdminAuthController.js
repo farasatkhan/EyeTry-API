@@ -88,10 +88,10 @@ exports.login = async (req, res, next) => {
 
         if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
 
-        const adminObject = {
-            email: isAdminExists.email,
-            role: isAdminExists.role
-        }
+        // const adminObject = {
+        //     email: isAdminExists.email,
+        //     role: isAdminExists.role
+        // }
 
         const token = this.generateAccessToken(isAdminExists);
         const refreshToken = this.generateRefreshToken(isAdminExists);
@@ -132,6 +132,11 @@ exports.generateRefreshToken = (user) => {
 exports.generateNewAccessToken = (req, res, next) => {
 
     try {
+        // const authorizationHeader = req.headers['authorization'];
+        // const token = authorizationHeader && authorizationHeader.split(' ')[1];
+
+        // if (token == null) return res.status(401).json({message: "No authorization header is present."});
+
         const refreshToken = req.body.token;
 
         if (refreshToken == null) return res.status(401).json({message: "No refresh token is present."});
