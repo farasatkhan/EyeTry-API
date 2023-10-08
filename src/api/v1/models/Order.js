@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const CounterModel = require('./OrderCounter'); // Import the Counter schema
 
 const OrderSchema = new mongoose.Schema({
-
     order_no: {
         type: Number,
         unique: true
@@ -20,16 +19,13 @@ const OrderSchema = new mongoose.Schema({
         },
         quantity: {
             type: Number,
-            required: true
           },
           frameProperties: {
               frameSize: {
                   type: String,
-                  required: true
               },
               frameColor: {
                   type: String,
-                  required: true
               },
           },
           lensProperties: {
@@ -74,7 +70,6 @@ const OrderSchema = new mongoose.Schema({
 
     totalPrice: {
         type: String,
-        required: true
     },
 
     paymentMethod : {
@@ -85,35 +80,27 @@ const OrderSchema = new mongoose.Schema({
     shippingAddress: {
         name: {
             type: String,
-            required: true
         },
         phone: {
             type: String,
-            required: true
         },
         address: {
             type: String,
-            required: true
         },
         city: {
             type: String,
-            required: true
         },
         country: {
             type: String,
-            required: true
         },
         zipCode: {
             type: String,
-            required: true
         },
     },  
-    
     orderDate: {     
         type: Date,
         default: Date.now,
     },
-
 });
 
 // Middleware to auto-increment order_no
