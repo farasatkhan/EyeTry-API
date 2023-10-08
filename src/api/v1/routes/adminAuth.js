@@ -12,4 +12,6 @@ router.delete('/logout', AdminAuthController.logout);
 
 router.post('/token', AdminAuthController.generateNewAccessToken);
 
+router.post('/verify_token', AdminAuthController.verifyToken);
+
 module.exports = router;

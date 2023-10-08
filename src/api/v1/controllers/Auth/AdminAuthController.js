@@ -88,6 +88,11 @@ exports.login = async (req, res, next) => {
 
         if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
 
+        const adminObject = {
+            email: isAdminExists.email,
+            role: isAdminExists.role
+        }
+
         const token = this.generateAccessToken(isAdminExists);
         const refreshToken = this.generateRefreshToken(isAdminExists);
 
@@ -159,6 +164,19 @@ exports.authenticateToken = (req, res, next) => {
 
         req.user = user;
         next();
+    });
+};
+
+exports.verifyToken = (req, res, next) => {
+    const authorizationHeader = req.headers['authorization'];
+    const token = authorizationHeader && authorizationHeader.split(' ')[1];
+
+    if (token == null) return res.status(401).json({message: "No authorization header is present."});
+
+    jwt.verify(token, process.env.ADMIN_ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({message: "Invalid Token."});
+
+        res.sendStatus(200);
     });
 };
 
