@@ -93,13 +93,17 @@ exports.userAddReview = async (req, res, next) => {
 
 
 exports.viewAllReviews = async (req, res, next) => {
+    const productId = req.params.productId;
+  
     try {
-        const Reviews = await ReviewModel.find({})
-        .populate({path: 'user', select: 'firstName lastName profilePicture'});
-
-        res.status(200).json(Reviews);
+      // Find reviews for the specific product using the productId
+      const Reviews = await ReviewModel.find({ 'product': productId })
+        .populate({ path: 'user', select: 'firstName lastName profilePicture' });
+  
+      res.status(200).json(Reviews);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "500: Error occured when fetching reviews."})
+      console.log(error);
+      res.status(500).json({ message: "500: Error occurred when fetching reviews." });
     }
-}
+  };
+  

@@ -107,21 +107,21 @@ const OrderSchema = new mongoose.Schema({
 OrderSchema.pre('save', async function () {
     const order = this;
 
-    // Find and increment the sequence_value in the Counter collection
+    // Finding and increment the sequence_value in the Counter collection
     try {
         const counter = await CounterModel.findOneAndUpdate(
-            { _id: 'order_no' }, // Change to 'order_no'
+            { _id: 'order_no' }, 
             { $inc: { sequence_value: 1 } },
             { new: true, upsert: true }
         );
-
-        order.order_no = counter.sequence_value; // Change to 'order_no'
+        // updatinng order_no
+        order.order_no = counter.sequence_value; 
     } catch (err) {
-        throw err; // Handle the error appropriately
+        throw err; 
     }
 });
 
-// Create the Mongoose model
+
 const OrderModel = mongoose.model('Order', OrderSchema);
 
 module.exports = OrderModel;
