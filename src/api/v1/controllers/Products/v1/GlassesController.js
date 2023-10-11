@@ -306,3 +306,29 @@ exports.viewProductImages = async (req, res, next) => {
 exports.deleteProductImages = async (req, res, next) => {
     res.status(200).json({message: "200: Success"})
 }
+
+
+// user side glasses Apis
+exports.viewNewArrivals = async (req, res, next) => {
+    try {
+      const oneHourAgo = new Date();
+      oneHourAgo.setHours(oneHourAgo.getHours() - 1); // Calculate the date and time one hour ago
+  
+      const newArrivals = await GlassesModel.find(
+        { 'createdAt': { $gte: oneHourAgo } },
+        { __v: 0 }
+      ).sort({ createdAt: -1 });
+  
+      if (!newArrivals) {
+        return res.status(400).json({
+          message: '400: Error occurred while fetching new arrivals',
+        });
+      }
+  
+      res.status(200).json(newArrivals);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: '500: Error occurred while fetching new arrivals' });
+    }
+  }
+  

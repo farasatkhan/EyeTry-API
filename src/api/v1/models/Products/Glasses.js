@@ -121,6 +121,10 @@ const Glasses = new mongoose.Schema({
     categories: [{
         type: String,
     }],
+    createdAt: {
+        type: Date,
+        default: Date.now, 
+    },
 });
 
 module.exports = mongoose.model('Glasses', Glasses);

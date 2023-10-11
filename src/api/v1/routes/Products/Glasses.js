@@ -15,4 +15,8 @@ router.put('/:glassesId/images', uploadProductImagesServer.array('product_images
 router.get('/:glassesId/images' , GlassesController.viewProductImages);
 router.delete('/:glassesId/images/:imageId', GlassesController.deleteProductImages);
 
+// Web user side glasses routes
+router.get('newArrivals', GlassesController.viewNewArrivals);
+
+
 module.exports = router;
