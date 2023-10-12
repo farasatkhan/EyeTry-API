@@ -323,7 +323,14 @@ exports.getAllUsers = async (req, res, next) => {
 
 exports.getAllOrders = async (req, res, next) => {
     try {
-        const allOrdersList = await OrdersModel.find({}, {__v: 0, }).sort({ _id: -1 });
+        const allOrdersList = await OrdersModel.find({}, { __v: 0 }).sort({ _id: -1 }).populate({
+            path: 'user',
+            select: 'firstName lastName profilePicture'
+            })
+            .populate({
+                path: 'paymentMethod',
+                select: 'paymentType'
+            });
 
         if (!allOrdersList) return res.status(400).json(
         {
