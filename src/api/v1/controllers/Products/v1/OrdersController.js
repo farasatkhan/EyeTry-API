@@ -45,8 +45,3 @@ exports.viewAllOrders = async (req, res, next) => {
     res.status(500).json({ message: "500: Error occurred while fetching orders." });
   }
 };
-
-
-
-
-
