@@ -321,11 +321,57 @@ exports.getAllUsers = async (req, res, next) => {
     }
 }
 
+exports.getParticularUser = async (req, res, next) => {
+    try {
+        const customerId = req.params.customerId;
+
+        const usersList = await UsersModel.findOne({_id: customerId}, {__v: 0, password: 0, payments: 0});
+
+        if (!usersList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching user"
+        });
+
+        res.status(200).json(usersList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching user"})
+    }
+}
+
 exports.getAllOrders = async (req, res, next) => {
     try {
         const allOrdersList = await OrdersModel.find({}, { __v: 0 }).sort({ _id: -1 }).populate({
             path: 'user',
             select: 'firstName lastName profilePicture'
+            })
+            .populate({
+                path: 'paymentMethod',
+                select: 'paymentType'
+            });
+
+        if (!allOrdersList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching orders"
+        });
+
+        res.status(200).json(allOrdersList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching orders"})
+    }
+}
+
+exports.getCustomersParticularOrders = async (req, res, next) => {
+    try {
+        
+        const customerId = req.params.customerId;
+
+        const allOrdersList = await OrdersModel.find({user: customerId}, { __v: 0 }).sort({ _id: -1 }).populate({
+            path: 'user',
+            select: '-password -payment'
             })
             .populate({
                 path: 'paymentMethod',

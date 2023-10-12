@@ -21,8 +21,12 @@ router.put('/giftcard/:giftcardId', AdminController.updateGiftcard);
 router.delete('/giftcard/:giftcardId', AdminController.deleteGiftcard);
 
 router.post('/create_test_user', AdminController.registerTestUser);
+
 router.get('/users', AdminController.getAllUsers);
+router.get('/users/:customerId', AdminController.getParticularUser);
+
 router.get('/orders', AdminController.getAllOrders);
+router.get('/orders/customer/:customerId', AdminController.getCustomersParticularOrders);
 
 router.put('/user/ban', AdminController.banUser);
 router.put('/user/unban', AdminController.unbanUser);
