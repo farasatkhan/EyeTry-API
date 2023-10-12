@@ -101,6 +101,10 @@ const OrderSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    deliveryStatus: {
+        type: String,
+        default: "Pending"
+    }
 });
 
 // Middleware to auto-increment order_no
