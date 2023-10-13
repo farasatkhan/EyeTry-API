@@ -5,6 +5,7 @@ var Giftcard = require('../../models/Giftcard');
 var UsersModel = require('../../models/User');
 var OrdersModel = require('../../models/Order');
 var GlassesModel = require('../../models/Products/Glasses');
+var CustomerSupportModel = require('../../models/CustomerSupport');
 
 const { sendEmail } = require('../../services/EmailService');
 
@@ -322,6 +323,23 @@ exports.getAllUsers = async (req, res, next) => {
     }
 }
 
+exports.getAllAgents = async (req, res, next) => {
+    try {
+        const agentsList = await CustomerSupportModel.find({}, {__v: 0, password: 0, payments: 0}).sort({ _id: -1 });
+
+        if (!agentsList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching agents"
+        });
+
+        res.status(200).json(agentsList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching agents"})
+    }
+}
+
 exports.getParticularUser = async (req, res, next) => {
     try {
         const customerId = req.params.customerId;
@@ -498,6 +516,38 @@ exports.banUser = async (req, res, next) => {
     }
 }
 
+// Ban Agent
+exports.banAgent = async (req, res, next) => {
+
+    const agentId = req.params.agentId;
+
+    const {banned_until, banned_reason} = req.body;
+
+    try {
+        const updatedAgentData = await CustomerSupportModel.findByIdAndUpdate(agentId, 
+            {
+                status: {
+                    user_status: "Banned", 
+                    is_banned: 
+                    {
+                        banned_until:  banned_until,
+                        banned_reason: banned_reason
+                    }
+                }
+            }, {new:true});
+
+        if (!updatedAgentData) {
+            return res.status(404).json({ message: 'agent not found' });
+        }
+
+        res.status(200).json({ message: 'agent is banned'});
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while banning agent' });
+    }
+}
+
 exports.unbanUser = async (req, res, next) => {
 
     const customerId = req.params.customerId;
@@ -520,5 +570,31 @@ exports.unbanUser = async (req, res, next) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({message: 'An error occurred while unbanning the user'})
+    }
+}
+
+// unban agent
+exports.unbanAgent = async (req, res, next) => {
+
+    const agentId = req.params.agentId;
+
+    try {
+        const updatedAgentData = await CustomerSupportModel.findByIdAndUpdate(agentId, 
+            {
+                status: {
+                    user_status: "Active", 
+                    is_banned: null
+                }
+            }, {new:true});
+
+        if (!updatedAgentData) {
+            return res.status(404).json({ message: 'agent not found' });
+        }
+
+        res.status(200).json({ message: 'agent is unbanned'});
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: 'An error occurred while unbanning the agent'})
     }
 }

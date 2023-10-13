@@ -13,4 +13,7 @@ router.post('/token', AuthController.generateNewAccessToken);
 
 // router.get('/authenticate', AuthController.authenticateToken);
 
+// this is a test route for agent. do not use it.
+router.post('/register_agent', AuthController.registerTestAgent);
+
 module.exports = router;

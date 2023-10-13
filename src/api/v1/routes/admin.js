@@ -25,11 +25,16 @@ router.post('/create_test_user', AdminController.registerTestUser);
 router.get('/users', AdminController.getAllUsers);
 router.get('/users/:customerId', AdminController.getParticularUser);
 
+router.get('/agents', AdminController.getAllAgents);
+
 router.get('/orders', AdminController.getAllOrders);
 router.get('/orders/customer/:customerId', AdminController.getCustomersParticularOrders);
 router.get('/orders/:orderId/customer/:customerId', AdminController.getCustomersSingleOrder);
 
 router.put('/user/ban/:customerId', AdminController.banUser);
 router.post('/user/unban/:customerId', AdminController.unbanUser);
+
+router.put('/agent/ban/:agentId', AdminController.banAgent);
+router.post('/agent/unban/:agentId', AdminController.unbanAgent);
 
 module.exports = router;

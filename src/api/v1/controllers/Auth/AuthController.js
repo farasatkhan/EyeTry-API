@@ -9,6 +9,8 @@ const { hashPassword, comparePassword } = require('../../helpers/hashing');
 
 var UsersModel = require('../../models/User');
 
+var CustomerSupportModel = require('../../models/CustomerSupport');
+
 /*
     TODO: Store JWT tokens in the database once authentication is completed
     Currently, we are only using the refreshTokens array to manage refresh tokens.
@@ -177,4 +179,40 @@ exports.verifyRefreshToken = (refreshToken) => {
 
         return true;
     });
+};
+
+// this is a test registration route for agent. do not use it.
+exports.registerTestAgent = async (req, res, next) => {
+    try {
+        const {firstname, lastname, email, password, confirmpassword} = req.body;
+
+        const isAgentAlreadyExists = await CustomerSupportModel.findOne({email: email});
+
+        if (isAgentAlreadyExists) return res.status(400).json({message: "Agent already exists."});
+
+        if (password !== confirmpassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
+
+        const hashedPassword = hashPassword(password);
+
+        const createAgent = await CustomerSupportModel.create({
+            firstName: firstname,
+            lastName: lastname,
+            email: email,
+            password: hashedPassword
+        });
+
+        if (!createAgent) return res.status(400).json({message: "Unable to create an account."});
+
+        res.status(201).json(
+            {
+                user: createAgent,
+                message: "User account is created."
+            }
+        );
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "error occured during account creation."});
+    }
+
 };

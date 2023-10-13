@@ -34,11 +34,25 @@ const customerSupportSchema = new mongoose.Schema({
         message: String,
         createdAt: Date
     }],
+    status: {
+        user_status: {
+            type: String,
+            default: "Active"
+        },
+        is_banned: {
+            banned_until: {
+                type: String,
+            },
+            banned_reason: {
+                type: String
+            }
+        }
+    },
     createdAt: {
         type: Date,
         required: true,
         default: new Date(),
     }
-});
+}); 
 
 module.exports = mongoose.model('CustomerSupport', customerSupportSchema);
