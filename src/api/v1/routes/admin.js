@@ -27,8 +27,9 @@ router.get('/users/:customerId', AdminController.getParticularUser);
 
 router.get('/orders', AdminController.getAllOrders);
 router.get('/orders/customer/:customerId', AdminController.getCustomersParticularOrders);
+router.get('/orders/:orderId/customer/:customerId', AdminController.getCustomersSingleOrder);
 
-router.put('/user/ban', AdminController.banUser);
-router.put('/user/unban', AdminController.unbanUser);
+router.put('/user/ban/:customerId', AdminController.banUser);
+router.post('/user/unban/:customerId', AdminController.unbanUser);
 
 module.exports = router;

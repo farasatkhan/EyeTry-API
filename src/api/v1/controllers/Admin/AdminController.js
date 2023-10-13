@@ -4,6 +4,7 @@ var AdminModel = require('../../models/Admin');
 var Giftcard = require('../../models/Giftcard');
 var UsersModel = require('../../models/User');
 var OrdersModel = require('../../models/Order');
+var GlassesModel = require('../../models/Products/Glasses');
 
 const { sendEmail } = require('../../services/EmailService');
 
@@ -349,6 +350,10 @@ exports.getAllOrders = async (req, res, next) => {
             .populate({
                 path: 'paymentMethod',
                 select: 'paymentType'
+            }).populate({
+                path: 'items.frame',
+                model: 'Glasses'
+                
             });
 
         if (!allOrdersList) return res.status(400).json(
@@ -376,7 +381,43 @@ exports.getCustomersParticularOrders = async (req, res, next) => {
             .populate({
                 path: 'paymentMethod',
                 select: 'paymentType'
-            });
+            }).populate({
+                path: 'items.frame',
+                model: 'Glasses'
+                
+            });;
+
+        if (!allOrdersList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching orders"
+        });
+
+        res.status(200).json(allOrdersList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching orders"})
+    }
+}
+
+exports.getCustomersSingleOrder = async (req, res, next) => {
+    try {
+        
+        const customerId = req.params.customerId;
+        const orderId = req.params.orderId;
+
+        const allOrdersList = await OrdersModel.findOne({user: customerId, _id: orderId}, { __v: 0 }).sort({ _id: -1 }).populate({
+            path: 'user',
+            select: '-password -payment'
+            })
+            .populate({
+                path: 'paymentMethod',
+                select: 'paymentType'
+            }).populate({
+                path: 'items.frame',
+                model: 'Glasses'
+                
+            });;
 
         if (!allOrdersList) return res.status(400).json(
         {
@@ -427,10 +468,13 @@ exports.registerTestUser = async (req, res, next) => {
 
 // Ban User
 exports.banUser = async (req, res, next) => {
-    const {userId, banned_until, banned_reason} = req.body;
+
+    const customerId = req.params.customerId;
+
+    const {banned_until, banned_reason} = req.body;
 
     try {
-        const updatedUserData = await UsersModel.findByIdAndUpdate(userId, 
+        const updatedUserData = await UsersModel.findByIdAndUpdate(customerId, 
             {
                 status: {
                     user_status: "Banned", 
@@ -455,10 +499,11 @@ exports.banUser = async (req, res, next) => {
 }
 
 exports.unbanUser = async (req, res, next) => {
-    const {userId} = req.body;
+
+    const customerId = req.params.customerId;
 
     try {
-        const updatedUserData = await UsersModel.findByIdAndUpdate(userId, 
+        const updatedUserData = await UsersModel.findByIdAndUpdate(customerId, 
             {
                 status: {
                     user_status: "Active", 
