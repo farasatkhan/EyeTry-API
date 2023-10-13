@@ -253,6 +253,7 @@ exports.addProductImages = async (req, res, next) => {
         }
 
         colors = req.body.color;
+        color_code = req.body.color_code;
         quantities = req.body.quantity;
         imageCounts = req.body.image_count;
 
@@ -271,9 +272,12 @@ exports.addProductImages = async (req, res, next) => {
 
             const variant = {
                 color: colors[i],
+                color_code: color_code[i],
                 quantity: quantities[i],
                 images: images
             }
+
+            console.log(variant)
 
             newFrameVariants.push(variant);
         }

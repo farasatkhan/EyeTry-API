@@ -53,6 +53,9 @@ const Glasses = new mongoose.Schema({
             color: {
                 type: String,
             },
+            color_code: {
+                type: String
+            },
             quantity: {
                 type: Number,
             },
