@@ -22,7 +22,8 @@ var tokens = require('../../helpers/refreshToken');
 exports.profile = async (req, res, next) => {
     try {
         // hardcoded temporarily.
-        const adminId = "64fb40e2734ac0a4df233e4e";
+        // const adminId = "64fb40e2734ac0a4df233e4e";
+        const adminId = req.params.adminId;
         const isAdminExists = await AdminModel.findById(adminId).select("-password -role");
 
         // const isAdminExists = await AdminModel.findById(req.user.id).select("-password -role");

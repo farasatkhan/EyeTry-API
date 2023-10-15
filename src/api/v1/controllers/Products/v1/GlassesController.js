@@ -6,9 +6,8 @@ var GlassesModel = require('../../../models/Products/Glasses.js');
 
 exports.addGlasses = async (req, res, next) => {
     try {
-
         const { 
-            name, sku, description, price, currency, discount, type, categories, meta_title, meta_keywords,
+            name, sku, description, sku_model, frame_shape, rim_shape, price, currency, discount, type, categories, meta_title, meta_keywords,
             meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
             bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status, frame_variants} = req.body;
 
@@ -43,6 +42,9 @@ exports.addGlasses = async (req, res, next) => {
             name: name,
             sku: sku,
             description: description,
+            sku_model: sku_model,
+            frame_shape: frame_shape,
+            rim_shape: rim_shape,
             priceInfo: {
                 price: price,
                 currency: currency
@@ -136,7 +138,7 @@ exports.updateGlasses = async (req, res, next) => {
         const glassesId = req.params.glassesId;
 
         const { 
-            name, sku, description, price, currency, discount, type, categories, meta_title, meta_keywords,
+            name, sku, description, price, sku_model, frame_shape, rim_shape, currency, discount, type, categories, meta_title, meta_keywords,
             meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
             bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status, frame_variants} = req.body;
 
@@ -160,6 +162,9 @@ exports.updateGlasses = async (req, res, next) => {
             name: name,
             sku: sku,
             description: description,
+            sku_model: sku_model,
+            frame_shape: frame_shape,
+            rim_shape: rim_shape,
             priceInfo: {
                 price: price,
                 currency: currency
@@ -334,5 +339,5 @@ exports.viewNewArrivals = async (req, res, next) => {
       console.log(error);
       res.status(500).json({ message: '500: Error occurred while fetching new arrivals' });
     }
-  }
+}
   
