@@ -9,6 +9,7 @@ require('./src/api/v1/services/database');
 
 var AuthRouter = require('./src/api/v1/routes/auth');
 var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
+var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
 
 var UsersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
@@ -61,6 +62,9 @@ app.use('/v1/faq', FAQRouter);
 app.use('/products/v1/reviews', ReviewsRouter);
 app.use('/products/v1/order', OrderRouter);
 
+// Customer Support 
+app.use('/agent/auth', AgentAuthRouter)
+
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
@@ -68,12 +72,12 @@ app.use('/test/product', testProductRouter);
 app.use('/test/vision_assessment', testVisionAssessmentRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
