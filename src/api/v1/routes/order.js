@@ -9,4 +9,6 @@ router.get('/viewAllOrders/:userId', authenticateToken, OrderController.viewAllO
 
 router.put('/:orderId', OrderController.updateOrderDeliveryStatus);
 
+router.get('/analytics', OrderController.orderAnalytics)
+
 module.exports = router;

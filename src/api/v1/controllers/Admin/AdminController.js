@@ -436,7 +436,7 @@ exports.getCustomersSingleOrder = async (req, res, next) => {
                 path: 'items.frame',
                 model: 'Glasses'
                 
-            });;
+            });
 
         if (!allOrdersList) return res.status(400).json(
         {
