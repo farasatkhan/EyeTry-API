@@ -67,3 +67,22 @@ exports.viewAllOrders = async (req, res, next) => {
     res.status(500).json({ message: "500: Error occurred while fetching orders." });
   }
 };
+
+
+exports.orderAnalytics = async (req, res, next) => {
+  try {
+
+    const allOrders = await OrderModel.find();
+
+    if (!allOrders) return res.status(400).json({message: "400: Error occured while getting orders."});
+
+    const totalOrders = allOrders.length;
+    const pendingOrders = allOrders.filter(order => order.deliveryStatus === 'Pending').length;
+    const deliveredOrders = allOrders.filter(order => order.deliveryStatus === 'Delivered').length;
+
+    res.status(200).json({ totalOrders: totalOrders,  pendingOrders: pendingOrders, deliveredOrders: deliveredOrders});
+
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+};
