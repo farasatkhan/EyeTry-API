@@ -268,7 +268,7 @@ exports.uploadProfileImageServer = async (req, res, next) => {
 // View Profile Image - Server
 exports.viewProfileImageServer = async (req, res, next) => {
     try {
-
+        const adminId = req.params.adminId;
         const imageId = await AdminModel.findById(req.user.id).select('profilePicture');
 
         if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
