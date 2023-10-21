@@ -184,50 +184,32 @@ exports.addPrescription = (req, res, next) => {
 
         const 
         {   
-            prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
-            singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
-            rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
-            leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
-            rightBaseDirectionVertical
+            prescriptionName,
+            prescriptionType,
+            pdType,
+            pdOneNumber,
+            pdLeftNumber,
+            pdRightNumber,
+            leftEyeOS,
+            rightEyeOD,
+            birthYear,
+            dateOfPrescription
 
         } = req.body;
 
         Prescription.create({
             prescriptionName: prescriptionName,
             prescriptionType: prescriptionType,
-            birthYear: birthYear,
             dateOfPrescription: dateOfPrescription,
-            renewalReminderDate: renewalReminderDate,
-            singleOrDualPD: singleOrDualPD,
-            pdInformation: {
-                left: {
-                    leftPD: leftPD,
-                    sphere: leftSphere,
-                    cylinder: leftCylinder,
-                    axis: leftAxis,
-                },
-                right: {
-                    rightPD: rightPD,
-                    sphere: rightSphere,
-                    cylinder: rightCylinder,
-                    axis: rightAxis,
-                },
-                nvadd: nvadd,
-            },
-            prismProperties: {
-                left: {
-                    prismHorizontal: leftPrismHorizontal, 
-                    prismVertical: leftPrismVertical, 
-                    baseDirectionHorizontal: leftBaseDirectionHorizontal,
-                    baseDirectionVertical: leftBaseDirectionVertical
-                },
-                right: {
-                    prismHorizontal: rightPrismHorizontal, 
-                    prismVertical: rightPrismVertical, 
-                    baseDirectionHorizontal: rightBaseDirectionHorizontal,
-                    baseDirectionVertical: rightBaseDirectionVertical
-                }
-            }
+            pdType: pdType,
+            pdOneNumber: pdOneNumber,
+            pdLeftNumber: pdLeftNumber,
+            pdRightNumber: pdRightNumber,
+            leftEyeOS: leftEyeOS,
+            rightEyeOD: rightEyeOD,
+            birthYear: birthYear,
+
+
         }).then((prescription) => {
 
             Users.findByIdAndUpdate(req.user.id, {$push: {prescriptions: prescription._id}}).then((response) => {
