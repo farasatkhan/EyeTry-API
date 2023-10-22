@@ -266,23 +266,36 @@ exports.addProductImages = async (req, res, next) => {
 
         let imageIndex = 0;
 
-        for (let i = 0; i < colors.length; i++) {
-            const imgCount = imageCounts[i];
-            const images = [];
-
-            for (let j = 0; j < imgCount; j++) {
-                images.push(filesLocation[imageIndex]);
-                imageIndex++;
+        if (Array.isArray(colors)){
+            for (let i = 0; i < colors.length; i++) {
+                const imgCount = imageCounts[i];
+                const images = [];
+    
+                for (let j = 0; j < imgCount; j++) {
+                    images.push(filesLocation[imageIndex]);
+                    imageIndex++;
+                }
+    
+                const variant = {
+                    color: colors[i],
+                    color_code: color_code[i],
+                    quantity: quantities[i],
+                    images: images
+                }
+    
+                console.log(variant)
+    
+                newFrameVariants.push(variant);
             }
+        } else {
 
+            // if there is a single item
             const variant = {
-                color: colors[i],
-                color_code: color_code[i],
-                quantity: quantities[i],
-                images: images
+                color: colors,
+                color_code: color_code,
+                quantity: quantities,
+                images: filesLocation
             }
-
-            console.log(variant)
 
             newFrameVariants.push(variant);
         }
