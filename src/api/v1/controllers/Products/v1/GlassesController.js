@@ -267,6 +267,11 @@ exports.addProductImages = async (req, res, next) => {
         let imageIndex = 0;
 
         if (Array.isArray(colors)){
+
+            if (typeof color_code === 'undefined') {
+                color_code = "";
+            }
+
             for (let i = 0; i < colors.length; i++) {
                 const imgCount = imageCounts[i];
                 const images = [];
