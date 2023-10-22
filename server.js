@@ -20,6 +20,9 @@ var FAQRouter = require('./src/api/v1/routes/FAQ/FAQ');
 var ReviewsRouter = require('./src/api/v1/routes/Products/Reviews');
 var OrderRouter = require('./src/api/v1/routes/order');
 
+var paymentRouter = require('./src/api/v1/routes/payment');
+
+
 
 /*
     The goal of the test router is to facilite the testing of other routes.
@@ -54,6 +57,7 @@ app.use('/admin/auth', AdminAuthRouter);
 app.use('/users', UsersRouter);
 app.use('/admin', AdminRouter);
 app.use('/products/', ProductRouter)
+app.use('/payment/', paymentRouter)
 
 app.use('/products/v1/glasses', GlassesRouter);
 app.use('/products/v1/category', CategoryRouter);
