@@ -27,13 +27,13 @@ exports.profile = async (req, res, next) => {
         console.log(req.user);
         const isUserExists = await Users.findById(req.user.id).select("-password");
 
-        if (!isUserExists) return res.status(400).json({message: "User account not found."});
+        if (!isUserExists) return res.status(400).json({ message: "User account not found." });
 
         res.status(200).json(isUserExists);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured"});
+        res.status(500).json({ message: "500: Error occured" });
     }
 }
 
@@ -42,12 +42,12 @@ exports.updatePersonalInformation = (req, res, next) => {
         const { firstName, lastName, email } = req.body;
 
         Users.updateOne(
-            {_id: req.user.id},
-            {$set: {firstName: firstname, lastName: lastname, email: email}}
+            { _id: req.user.id },
+            { $set: { firstName: firstname, lastName: lastname, email: email } }
         ).then((updateResponse) => {
 
-            Users.find({email: email}).then((response) => {
-                
+            Users.find({ email: email }).then((response) => {
+
                 // Generate new access token for user
                 const user = {
                     id: response[0]._id.toString(),
@@ -55,7 +55,7 @@ exports.updatePersonalInformation = (req, res, next) => {
 
                 const token = AuthController.generateAccessToken(user);
                 const refreshToken = AuthController.generateRefreshToken(user);
-            
+
                 tokens.addRefreshTokens(refreshToken);
 
                 res.status(200).json({
@@ -66,16 +66,16 @@ exports.updatePersonalInformation = (req, res, next) => {
                 });
 
             }).catch((error) => {
-                if (error) res.status(404).json({message: "error occured."});
+                if (error) res.status(404).json({ message: "error occured." });
             });
 
         }).catch((error) => {
-            if (error) res.status(404).json({message: "user not found"});
+            if (error) res.status(404).json({ message: "user not found" });
         })
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured"});
+        res.status(500).json({ message: "500: Error occured" });
     }
 }
 
@@ -88,26 +88,26 @@ exports.deleteAccount = async (req, res, next) => {
 
         const isUserExists = await Users.findById(req.user.id);
 
-        if (!isUserExists) return res.status(400).json({message: "User account not found."});
+        if (!isUserExists) return res.status(400).json({ message: "User account not found." });
 
         const comparedPassword = comparePassword(currentPassword, isUserExists.password);
 
-        if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
+        if (!comparedPassword) return res.status(400).json({ message: "Password is incorrect." });
 
         Users.findByIdAndDelete(req.user.id).then((response) => {
 
             // Expire Refresh Token
             tokens.filterRefreshTokens(refreshToken);
 
-            return res.status(204).json({message: "User account is deleted successfully."});
+            return res.status(204).json({ message: "User account is deleted successfully." });
 
         }).catch((error) => {
-            return res.status(403).json({message: "User don't have sufficient permissions to remove account."});
+            return res.status(403).json({ message: "User don't have sufficient permissions to remove account." });
         });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while deleting user account."});
+        res.status(500).json({ message: "500: Error occured while deleting user account." });
     }
 }
 
@@ -121,27 +121,27 @@ exports.changePassword = async (req, res, next) => {
 
         const UserDoc = await Users.findById(req.user.id);
 
-        if (!UserDoc) return res.status(400).json({message: "Invalid user id."});
+        if (!UserDoc) return res.status(400).json({ message: "Invalid user id." });
 
         const comparedPassword = comparePassword(currentPassword, UserDoc.password);
 
-        if (!comparedPassword) return res.status(400).json({message: "Current password is incorrect."});
+        if (!comparedPassword) return res.status(400).json({ message: "Current password is incorrect." });
 
-        if (newPassword !== confirmPassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
+        if (newPassword !== confirmPassword) return res.status(400).json({ message: "The password and confirm password fields do not match." });
 
         const newHashedPassword = hashPassword(newPassword);
 
-        Users.findByIdAndUpdate(req.user.id, {password: newHashedPassword}, {new: true}).then((response) => {
+        Users.findByIdAndUpdate(req.user.id, { password: newHashedPassword }, { new: true }).then((response) => {
 
-            return res.status(204).json({message: "User password is updated successfully."});
+            return res.status(204).json({ message: "User password is updated successfully." });
         }).catch((err) => {
             console.log(err);
-            return res.status(403).json({message: "User don't have sufficient permissions to change password."});
+            return res.status(403).json({ message: "User don't have sufficient permissions to change password." });
         })
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while changing user password."});
+        res.status(500).json({ message: "500: Error occured while changing user password." });
     }
 }
 
@@ -153,15 +153,15 @@ exports.forgetPassword = async (req, res, next) => {
 
         const { email } = req.body;
 
-        const UserDocs = await Users.findOne({email: email});
+        const UserDocs = await Users.findOne({ email: email });
 
-        if (!UserDocs) return res.status(400).json({message: "User not found."});
+        if (!UserDocs) return res.status(400).json({ message: "User not found." });
 
-        res.status(200).json({message: "Success! check your email for further steps."});
+        res.status(200).json({ message: "Success! check your email for further steps." });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while forgeting user password."});
+        res.status(500).json({ message: "500: Error occured while forgeting user password." });
     }
 }
 
@@ -169,11 +169,11 @@ exports.resetPassword = async (req, res, next) => {
     try {
 
         // Reset Password After User Clicks on Reset Password in email
-        res.status(200).json({message: "This feature will be implemented in next sprint."});
+        res.status(200).json({ message: "This feature will be implemented in next sprint." });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while changing user password."});
+        res.status(500).json({ message: "500: Error occured while changing user password." });
     }
 }
 
@@ -182,20 +182,20 @@ exports.addPrescription = (req, res, next) => {
 
     try {
 
-        const 
-        {   
-            prescriptionName,
-            prescriptionType,
-            pdType,
-            pdOneNumber,
-            pdLeftNumber,
-            pdRightNumber,
-            leftEyeOS,
-            rightEyeOD,
-            birthYear,
-            dateOfPrescription
+        const
+            {
+                prescriptionName,
+                prescriptionType,
+                pdType,
+                pdOneNumber,
+                pdLeftNumber,
+                pdRightNumber,
+                leftEyeOS,
+                rightEyeOD,
+                birthYear,
+                dateOfPrescription
 
-        } = req.body;
+            } = req.body;
 
         Prescription.create({
             prescriptionName: prescriptionName,
@@ -212,21 +212,21 @@ exports.addPrescription = (req, res, next) => {
 
         }).then((prescription) => {
 
-            Users.findByIdAndUpdate(req.user.id, {$push: {prescriptions: prescription._id}}).then((response) => {
-                res.status(200).json({message: "Prescription is added."});
+            Users.findByIdAndUpdate(req.user.id, { $push: { prescriptions: prescription._id } }).then((response) => {
+                res.status(200).json({ message: "Prescription is added." });
             }).catch((error) => {
                 console.log(error);
-                res.status(400).json({message: "Error occured while linking prescription object to user."});
+                res.status(400).json({ message: "Error occured while linking prescription object to user." });
             });
 
         }).catch((error) => {
             console.log(error);
-            res.status(400).json({message: "400: Unable to Store Prescription."});
+            res.status(400).json({ message: "400: Unable to Store Prescription." });
         });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while adding prescription."});
+        res.status(500).json({ message: "500: Error occured while adding prescription." });
     }
 }
 
@@ -234,7 +234,7 @@ exports.addPrescription = (req, res, next) => {
 exports.viewAllPrescriptions = async (req, res, next) => {
     try {
         const user = await Users.findById(req.user.id).populate('prescriptions');
-        
+
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
@@ -242,9 +242,9 @@ exports.viewAllPrescriptions = async (req, res, next) => {
         if (!user.prescriptions || user.prescriptions.length === 0) {
             return res.status(404).json({ message: "No prescriptions found for this user." });
         }
-            
+
         res.status(200).send(user.prescriptions);
-    
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "500: Error occurred while viewing information." });
@@ -260,19 +260,19 @@ exports.viewPrescription = async (req, res, next) => {
 
         const isPrescriptionExists = await Users.findById(req.user.id);
 
-        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({message: "Prescription does not exists."});
+        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({ message: "Prescription does not exists." });
 
         Prescription.findById(prescriptionId).then((prescription) => {
             console.log(prescription)
             res.status(200).send(prescription);
         }).catch((error) => {
             console.log(error);
-            res.status(400).json({message: "400: No prescription exists with the following id."});
+            res.status(400).json({ message: "400: No prescription exists with the following id." });
         });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while viewing prescription."});
+        res.status(500).json({ message: "500: Error occured while viewing prescription." });
     }
 }
 
@@ -285,17 +285,17 @@ exports.updatePrescription = async (req, res, next) => {
 
         const isPrescriptionExists = await Users.findById(req.user.id);
 
-        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({message: "Prescription does not exists."});
+        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({ message: "Prescription does not exists." });
 
-        const 
-        {   
-            prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
-            singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
-            rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
-            leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
-            rightBaseDirectionVertical
+        const
+            {
+                prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
+                singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
+                rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
+                leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
+                rightBaseDirectionVertical
 
-        } = req.body;
+            } = req.body;
 
         const updatedPrescription = {
             prescriptionName: prescriptionName,
@@ -321,29 +321,29 @@ exports.updatePrescription = async (req, res, next) => {
             },
             prismProperties: {
                 left: {
-                    prismHorizontal: leftPrismHorizontal, 
-                    prismVertical: leftPrismVertical, 
+                    prismHorizontal: leftPrismHorizontal,
+                    prismVertical: leftPrismVertical,
                     baseDirectionHorizontal: leftBaseDirectionHorizontal,
                     baseDirectionVertical: leftBaseDirectionVertical
                 },
                 right: {
-                    prismHorizontal: rightPrismHorizontal, 
-                    prismVertical: rightPrismVertical, 
+                    prismHorizontal: rightPrismHorizontal,
+                    prismVertical: rightPrismVertical,
                     baseDirectionHorizontal: rightBaseDirectionHorizontal,
                     baseDirectionVertical: rightBaseDirectionVertical
                 }
             }
         }
 
-        const UpdatedPrescription = await Prescription.findByIdAndUpdate(prescriptionId, updatedPrescription, {new: true});
+        const UpdatedPrescription = await Prescription.findByIdAndUpdate(prescriptionId, updatedPrescription, { new: true });
 
-        if (!UpdatedPrescription) return res.status(400).json({message: "400: Error occured while updating prescription."});
+        if (!UpdatedPrescription) return res.status(400).json({ message: "400: Error occured while updating prescription." });
 
         res.status(200).json(UpdatedPrescription);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while updating prescription."});
+        res.status(500).json({ message: "500: Error occured while updating prescription." });
     }
 }
 
@@ -358,21 +358,21 @@ exports.deletePrescription = async (req, res, next) => {
 
         console.log("Delete Prescription: ", isPrescriptionExists);
 
-        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({message: "Prescription does not exists."});
+        if (isPrescriptionExists && isPrescriptionExists.prescriptions.indexOf(prescriptionId) === -1) return res.status(404).json({ message: "Prescription does not exists." });
 
-        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {prescriptions: prescriptionId}});
-        
-        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing prescription from user."});
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, { $pull: { prescriptions: prescriptionId } });
+
+        if (!removeFromUserDoc) return res.status(400).json({ message: "400: Error occured while removing prescription from user." });
 
         const deletePrescription = await Prescription.findByIdAndDelete(prescriptionId);
 
-        if (!deletePrescription) return res.status(400).json({message: "400: Error occured while removing prescription."});
+        if (!deletePrescription) return res.status(400).json({ message: "400: Error occured while removing prescription." });
 
-        res.status(204).json({message: "204: Prescription is removed."});
+        res.status(204).json({ message: "204: Prescription is removed." });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while deleting prescription."});
+        res.status(500).json({ message: "500: Error occured while deleting prescription." });
     }
 }
 
@@ -380,12 +380,12 @@ exports.deletePrescription = async (req, res, next) => {
 exports.addPayment = (req, res, next) => {
     try {
 
-        const 
-        {
-            paymentType, nameOnCard, cardNumber, expirationMonth, expirationYear, cvv,
-            firstName, lastName, country, address, city, state, zipCode
+        const
+            {
+                paymentType, nameOnCard, cardNumber, expirationMonth, expirationYear, cvv,
+                firstName, lastName, country, address, city, state, zipCode
 
-        } = req.body;
+            } = req.body;
 
         Payment.create({
             paymentType: paymentType,
@@ -405,20 +405,20 @@ exports.addPayment = (req, res, next) => {
             }
         }).then((payment) => {
 
-            Users.findByIdAndUpdate(req.user.id, {$push: {payments: payment._id}}).then((response) => {
-                res.status(200).json({message: "Payment Method is added."});
+            Users.findByIdAndUpdate(req.user.id, { $push: { payments: payment._id } }).then((response) => {
+                res.status(200).json({ message: "Payment Method is added." });
             }).catch((error) => {
                 console.log(error);
-                res.status(400).json({message: "Error occured while linking payment object to user."});
+                res.status(400).json({ message: "Error occured while linking payment object to user." });
             });
 
         }).catch((error) => {
-            res.status(400).json({message: "Unable to store payment information."});
+            res.status(400).json({ message: "Unable to store payment information." });
         })
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while adding payment."});
+        res.status(500).json({ message: "500: Error occured while adding payment." });
     }
 }
 
@@ -426,14 +426,14 @@ exports.addPayment = (req, res, next) => {
 exports.viewAllPayments = async (req, res, next) => {
     try {
         const user = await Users.findById(req.user.id).populate('payments');
-        
-        if (!user) return res.status(404).json({message: "Payment does not exists."});
-            
+
+        if (!user) return res.status(404).json({ message: "Payment does not exists." });
+
         res.status(200).send(user.payments);
-    
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while viewing information."});
+        res.status(500).json({ message: "500: Error occured while viewing information." });
     }
 }
 
@@ -445,19 +445,19 @@ exports.viewPayment = async (req, res, next) => {
 
         const isPaymentExists = await Users.findById(req.user.id);
 
-        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({message: "Payment does not exists."});
+        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({ message: "Payment does not exists." });
 
         Payment.findById(paymentId).then((payment) => {
             console.log(payment)
             res.status(200).send(payment);
         }).catch((error) => {
             console.log(error);
-            res.status(400).json({message: "400: No payment exists with the following id."});
+            res.status(400).json({ message: "400: No payment exists with the following id." });
         });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while viewing payment information."});
+        res.status(500).json({ message: "500: Error occured while viewing payment information." });
     }
 }
 
@@ -470,14 +470,14 @@ exports.updatePayment = async (req, res, next) => {
 
         const isPaymentExists = await Users.findById(req.user.id);
 
-        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({message: "Payments does not exists."});
+        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({ message: "Payments does not exists." });
 
-        const 
-        {   
-            paymentType, nameOnCard, cardNumber, expirationMonth, expirationYear, cvv,
-            firstName, lastName, country, address, city, state, zipCode
+        const
+            {
+                paymentType, nameOnCard, cardNumber, expirationMonth, expirationYear, cvv,
+                firstName, lastName, country, address, city, state, zipCode
 
-        } = req.body;
+            } = req.body;
 
         const updatedPayment = {
             paymentType: paymentType,
@@ -497,15 +497,15 @@ exports.updatePayment = async (req, res, next) => {
             }
         }
 
-        const UpdatedPayment = await Payment.findByIdAndUpdate(paymentId, updatedPayment, {new: true});
+        const UpdatedPayment = await Payment.findByIdAndUpdate(paymentId, updatedPayment, { new: true });
 
-        if (!UpdatedPayment) return res.status(400).json({message: "400: Error occured while updating payment."});
+        if (!UpdatedPayment) return res.status(400).json({ message: "400: Error occured while updating payment." });
 
         res.status(200).json(UpdatedPayment);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while updating payment information."});
+        res.status(500).json({ message: "500: Error occured while updating payment information." });
     }
 }
 
@@ -519,21 +519,21 @@ exports.deletePayment = async (req, res, next) => {
 
         console.log("Delete Payment: ", isPaymentExists);
 
-        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({message: "Payment does not exists."});
+        if (isPaymentExists && isPaymentExists.payments.indexOf(paymentId) === -1) return res.status(404).json({ message: "Payment does not exists." });
 
-        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {payments: paymentId}});
-        
-        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing payment method from user."});
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, { $pull: { payments: paymentId } });
+
+        if (!removeFromUserDoc) return res.status(400).json({ message: "400: Error occured while removing payment method from user." });
 
         const deletePayment = await Payment.findByIdAndDelete(paymentId);
 
-        if (!deletePayment) return res.status(400).json({message: "400: Error occured while removing payment method."});
+        if (!deletePayment) return res.status(400).json({ message: "400: Error occured while removing payment method." });
 
-        res.status(204).json({message: "204: Payment is removed."});
+        res.status(204).json({ message: "204: Payment is removed." });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while deleting payment."});
+        res.status(500).json({ message: "500: Error occured while deleting payment." });
     }
 }
 
@@ -555,17 +555,36 @@ exports.addAddress = async (req, res, next) => {
             zipCode: zipCode
         }
 
-        const addedAddress = await Users.findByIdAndUpdate(req.user.id, {$push: {addressBook: newAddress}}, {new: true});
+        const addedAddress = await Users.findByIdAndUpdate(req.user.id, { $push: { addressBook: newAddress } }, { new: true });
 
-        if (!addedAddress) return res.status(404).json({message: "Error occured while adding address to addressbook."});
+        if (!addedAddress) return res.status(404).json({ message: "Error occured while adding address to addressbook." });
 
         res.status(200).json(addedAddress);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while adding address."});
+        res.status(500).json({ message: "500: Error occured while adding address." });
     }
 }
+
+// View addresses
+exports.viewAllAddresses = async (req, res, next) => {
+    try {
+
+        const user = await Users.findById({ _id: req.user.id }).select('addressBook');
+        const addresses = user.addressBook;
+        console.log(addresses)
+        if (!addresses) return res.status(404).json({ message: "Error occured while viewing address in addressbook." });
+
+        res.status(200).json(addresses);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "500: Error occured while viewing address." });
+    }
+}
+
+
 
 // View Particular Address
 exports.viewAddress = async (req, res, next) => {
@@ -573,15 +592,15 @@ exports.viewAddress = async (req, res, next) => {
 
         const addressId = req.params.addressId;
 
-        const viewAddress = await Users.findById({ _id: req.user.id}).select({addressBook: { $elemMatch: { _id: addressId }}});
+        const viewAddress = await Users.findById({ _id: req.user.id }).select({ addressBook: { $elemMatch: { _id: addressId } } });
 
-        if (!viewAddress) return res.status(404).json({message: "Error occured while viewing address in addressbook."});
+        if (!viewAddress) return res.status(404).json({ message: "Error occured while viewing address in addressbook." });
 
         res.status(200).json(viewAddress);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while viewing address."});
+        res.status(500).json({ message: "500: Error occured while viewing address." });
     }
 }
 
@@ -594,7 +613,7 @@ exports.updateAddress = async (req, res, next) => {
         const { firstName, lastName, phone, currentAddress, city, state, country, zipCode } = req.body;
 
         const updatedAddress = await Users.findOneAndUpdate(
-            {_id: req.user.id, 'addressBook._id': addressId},
+            { _id: req.user.id, 'addressBook._id': addressId },
             {
                 $set: {
                     "addressBook.$.firstName": firstName,
@@ -606,15 +625,15 @@ exports.updateAddress = async (req, res, next) => {
                     "addressBook.$.country": country,
                     "addressBook.$.zipCode": zipCode,
                 }
-            }, {new: true});
+            }, { new: true });
 
-        if (!updatedAddress) return res.status(400).json({message: "Unable to update address."});
-        
+        if (!updatedAddress) return res.status(400).json({ message: "Unable to update address." });
+
         res.status(200).json(updatedAddress);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while updating address."});
+        res.status(500).json({ message: "500: Error occured while updating address." });
     }
 }
 
@@ -624,15 +643,15 @@ exports.deleteAddress = async (req, res, next) => {
 
         const addressBookId = req.params.addressId;
 
-        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {addressBook: { _id: addressBookId }}});
-        
-        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing address from user."});
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, { $pull: { addressBook: { _id: addressBookId } } });
+
+        if (!removeFromUserDoc) return res.status(400).json({ message: "400: Error occured while removing address from user." });
 
         res.status(204).json(removeFromUserDoc);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while deleting address."});
+        res.status(500).json({ message: "500: Error occured while deleting address." });
     }
 }
 
@@ -642,15 +661,15 @@ exports.addWishlist = async (req, res, next) => {
 
         const { productId } = req.body;
 
-        const addedWishlistItem = await Users.findByIdAndUpdate({_id: req.user.id}, {$push: { wishlist: productId}});
+        const addedWishlistItem = await Users.findByIdAndUpdate({ _id: req.user.id }, { $push: { wishlist: productId } });
 
-        if (!addedWishlistItem) return res.status(400).json({message: "400: Error occured while adding item to users."});
+        if (!addedWishlistItem) return res.status(400).json({ message: "400: Error occured while adding item to users." });
 
-        res.status(200).json({message: "Product added to wishlist."});
-        
+        res.status(200).json({ message: "Product added to wishlist." });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while adding item to wishlist."});
+        res.status(500).json({ message: "500: Error occured while adding item to wishlist." });
     }
 }
 
@@ -660,15 +679,15 @@ exports.removeWishlist = async (req, res, next) => {
 
         const productId = req.params.productId;
 
-        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, {$pull: {wishlist: productId}});
-        
-        if (!removeFromUserDoc) return res.status(400).json({message: "400: Error occured while removing item from wishlist from user."});
+        const removeFromUserDoc = await Users.findByIdAndUpdate(req.user.id, { $pull: { wishlist: productId } });
+
+        if (!removeFromUserDoc) return res.status(400).json({ message: "400: Error occured while removing item from wishlist from user." });
 
         res.status(204).json(removeFromUserDoc);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while removing item from wishlist."});
+        res.status(500).json({ message: "500: Error occured while removing item from wishlist." });
     }
 }
 
@@ -679,15 +698,15 @@ exports.removeWishlist = async (req, res, next) => {
 exports.viewWishlist = async (req, res, next) => {
     try {
 
-        const viewWishlistProducts = await Users.findById({ _id: req.user.id}).select('wishlist').populate('wishlist');
+        const viewWishlistProducts = await Users.findById({ _id: req.user.id }).select('wishlist').populate('wishlist');
 
-        if (!viewWishlistProducts) return res.status(404).json({message: "Error occured while viewing wishlist items."});
+        if (!viewWishlistProducts) return res.status(404).json({ message: "Error occured while viewing wishlist items." });
 
         res.status(200).json(viewWishlistProducts);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while viewing item from wishlist."});
+        res.status(500).json({ message: "500: Error occured while viewing item from wishlist." });
     }
 }
 
@@ -697,17 +716,17 @@ exports.redeemGiftcard = async (req, res, next) => {
 
         const { code } = req.body;
 
-        const redeemGiftcard = await GiftCard.find({code: code});
+        const redeemGiftcard = await GiftCard.find({ code: code });
 
-        if (!redeemGiftcard || redeemGiftcard.length === 0) return res.status(404).json({message: "Invalid giftcard code."});
+        if (!redeemGiftcard || redeemGiftcard.length === 0) return res.status(404).json({ message: "Invalid giftcard code." });
 
         console.log(redeemGiftcard[0].status);
 
-        if (redeemGiftcard[0].status !== 'active') return res.status(404).json({message: "Giftcard is expired."});
+        if (redeemGiftcard[0].status !== 'active') return res.status(404).json({ message: "Giftcard is expired." });
 
-        const redeemingGiftcard = await GiftCard.findOneAndUpdate({code: code}, {$push: {usedBy: req.user.id}});
+        const redeemingGiftcard = await GiftCard.findOneAndUpdate({ code: code }, { $push: { usedBy: req.user.id } });
 
-        if (!redeemingGiftcard) return res.status(404).json({message: "Error occured while redeeming."});
+        if (!redeemingGiftcard) return res.status(404).json({ message: "Error occured while redeeming." });
 
         res.status(200).json({
             code: redeemGiftcard[0].code,
@@ -717,7 +736,7 @@ exports.redeemGiftcard = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "500: Error occured while redeeming giftcards."});
+        res.status(500).json({ message: "500: Error occured while redeeming giftcards." });
     }
 }
 
@@ -725,23 +744,23 @@ exports.redeemGiftcard = async (req, res, next) => {
 exports.uploadProfileImageS3 = async (req, res, next) => {
     try {
 
-        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+        if (!req.file) return res.status(400).json({ message: "Error occured while uploading image" });
 
         const randImageName = randomImageName();
 
         const s3Upload = await S3Storage.uploadFile(req.file, randImageName);
 
-        if (!s3Upload) return res.status(400).json({message: "Error occured while uploading to s3"});
+        if (!s3Upload) return res.status(400).json({ message: "Error occured while uploading to s3" });
 
-        const profilePicture = await Users.findByIdAndUpdate(req.user.id, {profilePicture: randImageName});
+        const profilePicture = await Users.findByIdAndUpdate(req.user.id, { profilePicture: randImageName });
 
-        if (!profilePicture) return res.status(400).json({message: "Error occured while uploading image to db"});
+        if (!profilePicture) return res.status(400).json({ message: "Error occured while uploading image to db" });
 
-        res.status(200).json({message: "Image uploaded successfully"});
+        res.status(200).json({ message: "Image uploaded successfully" });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while uploading images"});
+        res.status(500).json({ message: "Internal Error occured while uploading images" });
     }
 }
 
@@ -751,17 +770,17 @@ exports.viewProfileImageS3 = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
-        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({ message: "Error occured while retriving image id." });
 
         const url = await S3Storage.downloadFile(imageId.profilePicture);
 
-        if (!url) return res.status(400).json({message: "Error occured while viewing image from s3"});
+        if (!url) return res.status(400).json({ message: "Error occured while viewing image from s3" });
 
-        res.status(200).json({profilePicture: url});
-        
+        res.status(200).json({ profilePicture: url });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while viewing images"});
+        res.status(500).json({ message: "Internal Error occured while viewing images" });
     }
 }
 
@@ -771,21 +790,21 @@ exports.deleteProfileImageS3 = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
-        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({ message: "Error occured while retriving image id." });
 
         const removedImage = await S3Storage.deleteFile(imageId.profilePicture);
 
-        if (!removedImage) return res.status(400).json({message: "Error occured while removing image from s3"});
+        if (!removedImage) return res.status(400).json({ message: "Error occured while removing image from s3" });
 
-        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {profilePicture: ''});
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, { profilePicture: '' });
 
-        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({ message: "Error occured while removing image from db" });
 
-        res.status(200).json({message: "Image is removed from successfully."});
-        
+        res.status(200).json({ message: "Image is removed from successfully." });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while deleting images"});
+        res.status(500).json({ message: "Internal Error occured while deleting images" });
     }
 }
 
@@ -793,23 +812,23 @@ exports.deleteProfileImageS3 = async (req, res, next) => {
 exports.uploadTryOnImageS3 = async (req, res, next) => {
     try {
 
-        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+        if (!req.file) return res.status(400).json({ message: "Error occured while uploading image" });
 
         const randImageName = randomImageName();
 
         const s3Upload = await S3Storage.uploadFile(req.file, randImageName);
 
-        if (!s3Upload) return res.status(400).json({message: "Error occured while uploading to s3"});
+        if (!s3Upload) return res.status(400).json({ message: "Error occured while uploading to s3" });
 
-        const tryOnImage = await Users.findByIdAndUpdate(req.user.id, {$push: {tryOnImages: randImageName}});
+        const tryOnImage = await Users.findByIdAndUpdate(req.user.id, { $push: { tryOnImages: randImageName } });
 
-        if (!tryOnImage) return res.status(400).json({message: "Error occured while uploading image to db"});
+        if (!tryOnImage) return res.status(400).json({ message: "Error occured while uploading image to db" });
 
-        res.status(200).json({message: "Try On Image uploaded successfully"});
+        res.status(200).json({ message: "Try On Image uploaded successfully" });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while uploading images"});
+        res.status(500).json({ message: "Internal Error occured while uploading images" });
     }
 }
 
@@ -819,17 +838,17 @@ exports.viewTryOnImagesS3 = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('tryOnImages');
 
-        if (imageId && imageId.tryOnImages.length === 0) return res.status(400).json({message: "No try on images are present."});
+        if (imageId && imageId.tryOnImages.length === 0) return res.status(400).json({ message: "No try on images are present." });
 
         const urls = await S3Storage.viewAllFiles(imageId.tryOnImages);
 
-        if (!urls) return res.status(400).json({message: "Error occured while viewing image from s3"});
+        if (!urls) return res.status(400).json({ message: "Error occured while viewing image from s3" });
 
-        res.status(200).json({tryonImages: urls});
-        
+        res.status(200).json({ tryonImages: urls });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while viewing images"});
+        res.status(500).json({ message: "Internal Error occured while viewing images" });
     }
 }
 
@@ -841,44 +860,44 @@ exports.deleteTryOnImageS3 = async (req, res, next) => {
 
         const userDoc = await Users.findById(req.user.id).select('tryOnImages');
 
-        if (userDoc && userDoc.tryOnImages.indexOf(removeTryOnImageId) === -1) return res.status(400).json({message: "No try on images are present."});
+        if (userDoc && userDoc.tryOnImages.indexOf(removeTryOnImageId) === -1) return res.status(400).json({ message: "No try on images are present." });
 
         const removedImage = await S3Storage.deleteFile(removeTryOnImageId);
 
-        if (!removedImage) return res.status(400).json({message: "Error occured while removing image from s3"});
+        if (!removedImage) return res.status(400).json({ message: "Error occured while removing image from s3" });
 
-        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {$pull: {tryOnImages: removeTryOnImageId}});
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, { $pull: { tryOnImages: removeTryOnImageId } });
 
-        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({ message: "Error occured while removing image from db" });
 
-        res.status(200).json({message: "Image is removed from successfully."});
-        
+        res.status(200).json({ message: "Image is removed from successfully." });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while deleting images"});
+        res.status(500).json({ message: "Internal Error occured while deleting images" });
     }
 }
 
 // Upload Profile Image - Server
 exports.uploadProfileImageServer = async (req, res, next) => {
     try {
-        
-        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+
+        if (!req.file) return res.status(400).json({ message: "Error occured while uploading image" });
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
         // If Profile Picture already exists then remove the old image.
         if ((imageId && imageId.profilePicture)) fs.unlinkSync('./public/uploads/profile_images/' + imageId.profilePicture);
 
-        const profilePicture = await Users.findByIdAndUpdate(req.user.id, {profilePicture: req.file.filename}, {new: true});
+        const profilePicture = await Users.findByIdAndUpdate(req.user.id, { profilePicture: req.file.filename }, { new: true });
 
-        if (!profilePicture) return res.status(400).json({message: "Error occured while uploading image to db"});
+        if (!profilePicture) return res.status(400).json({ message: "Error occured while uploading image to db" });
 
-        res.status(200).json({message: "Image uploaded successfully"});
+        res.status(200).json({ message: "Image uploaded successfully" });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while uploading image to server"})
+        res.status(500).json({ message: "Internal Error occured while uploading image to server" })
     }
 }
 
@@ -888,7 +907,7 @@ exports.viewProfileImageServer = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
-        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({ message: "Error occured while retriving image id." });
 
         res.status(200).json(
             {
@@ -898,7 +917,7 @@ exports.viewProfileImageServer = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while viewing image from server"})
+        res.status(500).json({ message: "Internal Error occured while viewing image from server" })
     }
 }
 
@@ -907,19 +926,19 @@ exports.deleteProfileImageServer = async (req, res, next) => {
     try {
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
-        if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
+        if (!(imageId && imageId.profilePicture)) return res.status(400).json({ message: "Error occured while retriving image id." });
 
         fs.unlinkSync('./public/uploads/profile_images/' + imageId.profilePicture);
 
-        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {profilePicture: ''});
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, { profilePicture: '' });
 
-        if (!removeFromUserDocs) res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) res.status(400).json({ message: "Error occured while removing image from db" });
 
-        res.status(200).json({message: "Image is removed from successfully."});
+        res.status(200).json({ message: "Image is removed from successfully." });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while deleting image from server"})
+        res.status(500).json({ message: "Internal Error occured while deleting image from server" })
     }
 }
 
@@ -928,17 +947,17 @@ exports.deleteProfileImageServer = async (req, res, next) => {
 exports.uploadTryOnImageServer = async (req, res, next) => {
     try {
 
-        if (!req.file) return res.status(400).json({message: "Error occured while uploading image"});
+        if (!req.file) return res.status(400).json({ message: "Error occured while uploading image" });
 
-        const tryOnImage = await Users.findByIdAndUpdate(req.user.id, {$push: {tryOnImages: req.file.filename}});
+        const tryOnImage = await Users.findByIdAndUpdate(req.user.id, { $push: { tryOnImages: req.file.filename } });
 
-        if (!tryOnImage) return res.status(400).json({message: "Error occured while uploading image to db"});
+        if (!tryOnImage) return res.status(400).json({ message: "Error occured while uploading image to db" });
 
-        res.status(200).json({message: "Try On Image uploaded successfully"});
+        res.status(200).json({ message: "Try On Image uploaded successfully" });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while uploading images"});
+        res.status(500).json({ message: "Internal Error occured while uploading images" });
     }
 }
 
@@ -948,17 +967,17 @@ exports.viewTryOnImagesServer = async (req, res, next) => {
 
         const imageId = await Users.findById(req.user.id).select('tryOnImages');
 
-        if (imageId && imageId.tryOnImages.length === 0) return res.status(400).json({message: "No try on images are present."});
+        if (imageId && imageId.tryOnImages.length === 0) return res.status(400).json({ message: "No try on images are present." });
 
         res.status(200).json(
             {
                 tryonImages: imageId.tryOnImages,
                 locations: imageId.tryOnImages.map(image => '/uploads/tryon_images/' + image)
             });
-    
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while viewing images"});
+        res.status(500).json({ message: "Internal Error occured while viewing images" });
     }
 }
 
@@ -970,19 +989,19 @@ exports.deleteTryOnImageServer = async (req, res, next) => {
 
         const userDoc = await Users.findById(req.user.id).select('tryOnImages');
 
-        if (userDoc && userDoc.tryOnImages.indexOf(removeTryOnImageId) === -1) return res.status(400).json({message: "No try on images are present."});
+        if (userDoc && userDoc.tryOnImages.indexOf(removeTryOnImageId) === -1) return res.status(400).json({ message: "No try on images are present." });
 
         fs.unlinkSync('./public/uploads/tryon_images/' + removeTryOnImageId);
 
-        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, {$pull: {tryOnImages: removeTryOnImageId}});
+        const removeFromUserDocs = await Users.findByIdAndUpdate(req.user.id, { $pull: { tryOnImages: removeTryOnImageId } });
 
-        if (!removeFromUserDocs) return res.status(400).json({message: "Error occured while removing image from db"});
+        if (!removeFromUserDocs) return res.status(400).json({ message: "Error occured while removing image from db" });
 
-        res.status(200).json({message: "Image is removed from successfully."});
-        
+        res.status(200).json({ message: "Image is removed from successfully." });
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal Error occured while deleting images"});
+        res.status(500).json({ message: "Internal Error occured while deleting images" });
     }
 }
 
@@ -992,7 +1011,7 @@ exports.submitVisionAssessmentResult = async (req, res, next) => {
         const { testType, status } = req.body;
 
         const submitVisionAssessmentTest = await Users.findByIdAndUpdate(
-            {_id: req.user.id}, 
+            { _id: req.user.id },
             {
                 $push: {
                     visionAssessments: {
@@ -1003,29 +1022,29 @@ exports.submitVisionAssessmentResult = async (req, res, next) => {
             }
         );
 
-        if (!submitVisionAssessmentTest) return res.status(400).json({message: "400: Error occured while submitting vision assessment result."});
+        if (!submitVisionAssessmentTest) return res.status(400).json({ message: "400: Error occured while submitting vision assessment result." });
 
-        res.status(200).json({message: "Test Result Submitted."});
+        res.status(200).json({ message: "Test Result Submitted." });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal error occured in submitting vision assessment route."})
+        res.status(500).json({ message: "Internal error occured in submitting vision assessment route." })
     }
 }
 
 exports.viewVisionAssessmentResult = async (req, res, next) => {
     try {
 
-        const visionAssessmentsResults = await Users.findById({_id: req.user.id}).select('visionAssessments');
+        const visionAssessmentsResults = await Users.findById({ _id: req.user.id }).select('visionAssessments');
 
-        if (!visionAssessmentsResults) return res.status(400).json({message: "400: Error occured while viewing vision assessment results"});
+        if (!visionAssessmentsResults) return res.status(400).json({ message: "400: Error occured while viewing vision assessment results" });
 
-        if (visionAssessmentsResults.visionAssessments.length <= 0) return res.status(200).json({message: "No vision assessment test results are present."})
+        if (visionAssessmentsResults.visionAssessments.length <= 0) return res.status(200).json({ message: "No vision assessment test results are present." })
 
         res.status(200).json(visionAssessmentsResults);
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal error occured in viewing vision assessment route."})
+        res.status(500).json({ message: "Internal error occured in viewing vision assessment route." })
     }
 }
