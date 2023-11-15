@@ -4,7 +4,7 @@ var router = express.Router();
 var UsersController = require('../controllers/Users/UsersController');
 
 var { authenticateToken } = require('../controllers/Auth/AuthController');
-var { uploadMemStorageS3, uploadProfileImagesServer, uploadTryOnImagesServer} = require('../helpers/ImageStorage');
+var { uploadMemStorageS3, uploadProfileImagesServer, uploadTryOnImagesServer } = require('../helpers/ImageStorage');
 
 router.get('/profile', authenticateToken, UsersController.profile);
 router.post('/update_info', authenticateToken, UsersController.updatePersonalInformation);
@@ -27,6 +27,7 @@ router.delete('/delete_payment/:paymentId', authenticateToken, UsersController.d
 
 router.post('/add_address', authenticateToken, UsersController.addAddress);
 router.get('/view_address/:addressId', authenticateToken, UsersController.viewAddress);
+router.get('/view_addresses', authenticateToken, UsersController.viewAllAddresses);
 router.put('/update_address/:addressId', authenticateToken, UsersController.updateAddress);
 router.delete('/delete_address/:addressId', authenticateToken, UsersController.deleteAddress);
 
