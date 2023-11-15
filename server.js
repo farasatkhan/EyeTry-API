@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const allowedOrigins = ['http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:3000', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000'];
 
 app.use(cors({
   origin: allowedOrigins,
@@ -47,7 +47,6 @@ app.use(cors({
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
   allowedHeaders: ['Authorization', 'Content-Type']
 }));
-
 
 app.use('/auth', AuthRouter);
 app.use('/admin/auth', AdminAuthRouter);

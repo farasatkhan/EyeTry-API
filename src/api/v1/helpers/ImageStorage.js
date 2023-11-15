@@ -42,7 +42,7 @@ exports.uploadProductImagesServer = multer({
     storage: memoryStorageProductImages,
     fileFilter: function (req, file, callback) {
         var fileExtension = path.extname(file.originalname);
-        if(fileExtension !== '.png' && fileExtension !== '.jpg' && fileExtension !== '.jpeg') {
+        if(fileExtension !== '.png' && fileExtension !== '.jpg' && fileExtension !== '.jpeg' && fileExtension !== '.webp' && fileExtension !== '.avif') {
             return callback(new Error('Only images are allowed'))
         }
         callback(null, true)
