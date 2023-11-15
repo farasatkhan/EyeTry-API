@@ -20,6 +20,13 @@ var CategoryRouter = require('./src/api/v1/routes/Products/Category');
 var FAQRouter = require('./src/api/v1/routes/FAQ/FAQ');
 var ReviewsRouter = require('./src/api/v1/routes/Products/Reviews');
 var OrderRouter = require('./src/api/v1/routes/order');
+var paymentRouter = require('./src/api/v1/routes/payment');
+
+var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
+var AgentRouter = require('./src/api/v1/routes/supportAgent')
+var TicketRouter = require('./src/api/v1/routes/tickets')
+
+
 
 var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
 var AgentRouter = require('./src/api/v1/routes/supportAgent')
@@ -57,6 +64,7 @@ app.use('/admin/auth', AdminAuthRouter);
 app.use('/users', UsersRouter);
 app.use('/admin', AdminRouter);
 app.use('/products/', ProductRouter)
+app.use('/payment/', paymentRouter)
 
 app.use('/products/v1/glasses', GlassesRouter);
 app.use('/products/v1/category', CategoryRouter);

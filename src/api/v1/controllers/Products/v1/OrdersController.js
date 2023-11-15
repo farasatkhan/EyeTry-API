@@ -28,6 +28,28 @@ exports.checkout = async (req, res, next) => {
   }
 };
 
+exports.updateOrderDeliveryStatus = async (req, res, next) => {
+  try {
+    const orderId = req.params.orderId;
+
+    const { deliveryStatus } = req.body;
+
+    console.log(deliveryStatus);
+
+    const updatedOrderInfo = await OrderModel.findByIdAndUpdate(orderId, {deliveryStatus: deliveryStatus}, {new: true});
+
+    if (!updatedOrderInfo) return res.status(400).json({message: "400: Error occured while updating order."});
+
+    res.status(200).json({
+        products: updatedOrderInfo,
+        message: "Information is updated successfully."
+    });
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({message: "500: Error occured while updating order."});
+  }
+}
+
 
 
 // Define the route to view all orders placed by a user
@@ -43,5 +65,24 @@ exports.viewAllOrders = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "500: Error occurred while fetching orders." });
+  }
+};
+
+
+exports.orderAnalytics = async (req, res, next) => {
+  try {
+
+    const allOrders = await OrderModel.find();
+
+    if (!allOrders) return res.status(400).json({message: "400: Error occured while getting orders."});
+
+    const totalOrders = allOrders.length;
+    const pendingOrders = allOrders.filter(order => order.deliveryStatus === 'Pending').length;
+    const deliveredOrders = allOrders.filter(order => order.deliveryStatus === 'Delivered').length;
+
+    res.status(200).json({ totalOrders: totalOrders,  pendingOrders: pendingOrders, deliveredOrders: deliveredOrders});
+
+  } catch (err) {
+    res.status(500).json({ error: err });
   }
 };

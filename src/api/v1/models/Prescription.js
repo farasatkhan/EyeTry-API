@@ -8,7 +8,7 @@ const prescriptionInfoSchema = new mongoose.Schema({
         type: String,
     },
     dateOfPrescription: {
-        type: Date,
+        type: String,
     },
     pdType: {
         type: String,
@@ -41,7 +41,7 @@ const prescriptionInfoSchema = new mongoose.Schema({
         Base: String
       },
       birthYear: {
-        type: Number,
+        type: String,
         required: true
       }
 });

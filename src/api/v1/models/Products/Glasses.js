@@ -11,6 +11,15 @@ const Glasses = new mongoose.Schema({
     description: {
         type: String,
     },
+    sku_model: {
+        type: String,
+    },
+    frame_shape: {
+        type: String,
+    },
+    rim_shape: {
+        type: String,
+    },
     priceInfo: {
         price: {
             type: Number,

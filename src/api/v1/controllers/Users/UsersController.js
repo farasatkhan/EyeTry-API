@@ -184,50 +184,32 @@ exports.addPrescription = (req, res, next) => {
 
         const 
         {   
-            prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
-            singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
-            rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
-            leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
-            rightBaseDirectionVertical
+            prescriptionName,
+            prescriptionType,
+            pdType,
+            pdOneNumber,
+            pdLeftNumber,
+            pdRightNumber,
+            leftEyeOS,
+            rightEyeOD,
+            birthYear,
+            dateOfPrescription
 
         } = req.body;
 
         Prescription.create({
             prescriptionName: prescriptionName,
             prescriptionType: prescriptionType,
-            birthYear: birthYear,
             dateOfPrescription: dateOfPrescription,
-            renewalReminderDate: renewalReminderDate,
-            singleOrDualPD: singleOrDualPD,
-            pdInformation: {
-                left: {
-                    leftPD: leftPD,
-                    sphere: leftSphere,
-                    cylinder: leftCylinder,
-                    axis: leftAxis,
-                },
-                right: {
-                    rightPD: rightPD,
-                    sphere: rightSphere,
-                    cylinder: rightCylinder,
-                    axis: rightAxis,
-                },
-                nvadd: nvadd,
-            },
-            prismProperties: {
-                left: {
-                    prismHorizontal: leftPrismHorizontal, 
-                    prismVertical: leftPrismVertical, 
-                    baseDirectionHorizontal: leftBaseDirectionHorizontal,
-                    baseDirectionVertical: leftBaseDirectionVertical
-                },
-                right: {
-                    prismHorizontal: rightPrismHorizontal, 
-                    prismVertical: rightPrismVertical, 
-                    baseDirectionHorizontal: rightBaseDirectionHorizontal,
-                    baseDirectionVertical: rightBaseDirectionVertical
-                }
-            }
+            pdType: pdType,
+            pdOneNumber: pdOneNumber,
+            pdLeftNumber: pdLeftNumber,
+            pdRightNumber: pdRightNumber,
+            leftEyeOS: leftEyeOS,
+            rightEyeOD: rightEyeOD,
+            birthYear: birthYear,
+
+
         }).then((prescription) => {
 
             Users.findByIdAndUpdate(req.user.id, {$push: {prescriptions: prescription._id}}).then((response) => {
@@ -247,6 +229,28 @@ exports.addPrescription = (req, res, next) => {
         res.status(500).json({message: "500: Error occured while adding prescription."});
     }
 }
+
+// view all Prescriptions
+exports.viewAllPrescriptions = async (req, res, next) => {
+    try {
+        const user = await Users.findById(req.user.id).populate('prescriptions');
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        if (!user.prescriptions || user.prescriptions.length === 0) {
+            return res.status(404).json({ message: "No prescriptions found for this user." });
+        }
+            
+        res.status(200).send(user.prescriptions);
+    
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "500: Error occurred while viewing information." });
+    }
+}
+
 
 // View Particular Prescription
 exports.viewPrescription = async (req, res, next) => {

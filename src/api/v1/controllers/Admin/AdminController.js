@@ -22,7 +22,8 @@ var tokens = require('../../helpers/refreshToken');
 exports.profile = async (req, res, next) => {
     try {
         // hardcoded temporarily.
-        const adminId = "64fb40e2734ac0a4df233e4e";
+        // const adminId = "64fb40e2734ac0a4df233e4e";
+        const adminId = req.params.adminId;
         const isAdminExists = await AdminModel.findById(adminId).select("-password -role");
 
         // const isAdminExists = await AdminModel.findById(req.user.id).select("-password -role");
@@ -267,7 +268,7 @@ exports.uploadProfileImageServer = async (req, res, next) => {
 // View Profile Image - Server
 exports.viewProfileImageServer = async (req, res, next) => {
     try {
-
+        const adminId = req.params.adminId;
         const imageId = await AdminModel.findById(req.user.id).select('profilePicture');
 
         if (!(imageId && imageId.profilePicture)) return res.status(400).json({message: "Error occured while retriving image id."});
@@ -435,7 +436,7 @@ exports.getCustomersSingleOrder = async (req, res, next) => {
                 path: 'items.frame',
                 model: 'Glasses'
                 
-            });;
+            });
 
         if (!allOrdersList) return res.status(400).json(
         {

@@ -6,12 +6,10 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         unique: true
     },
-
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-
     items: [{
         frame: {
             type: mongoose.Schema.Types.ObjectId,
@@ -67,16 +65,13 @@ const OrderSchema = new mongoose.Schema({
           },
     }
     ],
-
     totalPrice: {
         type: String,
     },
-
     paymentMethod : {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Payment'
     },
-
     shippingAddress: {
         name: {
             type: String,
