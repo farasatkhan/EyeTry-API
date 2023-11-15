@@ -25,15 +25,15 @@ exports.register = async (req, res, next) => {
         const authorizationHeader = req.headers['authorization'];
         const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "User is logged in."});
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({ message: "User is logged in." });
 
-        const {firstname, lastname, email, password, confirmpassword} = req.body;
+        const { firstname, lastname, email, password, confirmpassword } = req.body;
 
-        const isUserAlreadyExists = await UsersModel.findOne({email: email});
+        const isUserAlreadyExists = await UsersModel.findOne({ email: email });
 
-        if (isUserAlreadyExists) return res.status(400).json({message: "User already exists."});
+        if (isUserAlreadyExists) return res.status(400).json({ message: "User already exists." });
 
-        if (password !== confirmpassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
+        if (password !== confirmpassword) return res.status(400).json({ message: "The password and confirm password fields do not match." });
 
         const hashedPassword = hashPassword(password);
 
@@ -44,11 +44,11 @@ exports.register = async (req, res, next) => {
             password: hashedPassword
         });
 
-        if (!createUser) return res.status(400).json({message: "Unable to create an account."});
+        if (!createUser) return res.status(400).json({ message: "Unable to create an account." });
 
         const token = this.generateAccessToken(createUser);
         const refreshToken = this.generateRefreshToken(createUser);
-        
+
         tokens.addRefreshTokens(refreshToken);
 
         res.set('Authorization', `Bearer ${token}`);
@@ -64,7 +64,7 @@ exports.register = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "error occured during account creation."});
+        res.status(500).json({ message: "error occured during account creation." });
     }
 
 };
@@ -79,17 +79,17 @@ exports.login = async (req, res, next) => {
         console.log("Verify Auth Access:", this.verifyAccessToken(Authtoken));
         console.log("Verify Refresh Access:", this.verifyRefreshToken(Authtoken));
 
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({message: "User is already logged in."});
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({ message: "User is already logged in." });
 
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        const isUserExists = await UsersModel.findOne({email: email});
+        const isUserExists = await UsersModel.findOne({ email: email });
 
-        if (!isUserExists) return res.status(400).json({message: "User account not found."});
+        if (!isUserExists) return res.status(400).json({ message: "User account not found." });
 
         const comparedPassword = comparePassword(password, isUserExists.password);
 
-        if (!comparedPassword) return res.status(400).json({message: "Password is incorrect."});
+        if (!comparedPassword) return res.status(400).json({ message: "Password is incorrect." });
 
         const token = this.generateAccessToken(isUserExists);
         const refreshToken = this.generateRefreshToken(isUserExists);
@@ -109,22 +109,22 @@ exports.login = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "error occured during login."});
+        res.status(500).json({ message: "error occured during login." });
     };
 };
 
 exports.logout = (req, res, next) => {
-    
+
     tokens.filterRefreshTokens(req.body.token);
-    res.status(204).json({message: "Logout successful."});
+    res.status(204).json({ message: "Logout successful." });
 };
 
 exports.generateAccessToken = (user) => {
-    return jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '5s'});
+    return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60m' });
 };
 
 exports.generateRefreshToken = (user) => {
-    return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
 }
 
 exports.generateNewAccessToken = (req, res, next) => {
@@ -132,13 +132,13 @@ exports.generateNewAccessToken = (req, res, next) => {
     try {
         const refreshToken = req.body.token;
 
-        if (refreshToken == null) return res.status(401).json({message: "No refresh token is present."});
+        if (refreshToken == null) return res.status(401).json({ message: "No refresh token is present." });
 
-        if (!tokens.getRefreshTokens().includes(refreshToken)) return res.status(403).json({message: "Invalid refresh token."});
+        if (!tokens.getRefreshTokens().includes(refreshToken)) return res.status(403).json({ message: "Invalid refresh token." });
 
         jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
 
-            if (err) return res.status(403).json({message: "Invalid refresh token is present."});
+            if (err) return res.status(403).json({ message: "Invalid refresh token is present." });
 
             const accessToken = this.generateAccessToken(user);
 
@@ -147,7 +147,7 @@ exports.generateNewAccessToken = (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "Internal error occured."});
+        res.status(500).json({ message: "Internal error occured." });
     }
 };
 
@@ -155,10 +155,10 @@ exports.authenticateToken = (req, res, next) => {
     const authorizationHeader = req.headers['authorization'];
     const token = authorizationHeader && authorizationHeader.split(' ')[1];
 
-    if (token == null) return res.status(401).json({message: "No authorization header is present."});
+    if (token == null) return res.status(401).json({ message: "No authorization header is present." });
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) return res.status(403).json({message: "Invalid Token."});
+        if (err) return res.status(403).json({ message: "Invalid Token." });
 
         req.user = user;
         next();
@@ -184,13 +184,13 @@ exports.verifyRefreshToken = (refreshToken) => {
 // this is a test registration route for agent. do not use it.
 exports.registerTestAgent = async (req, res, next) => {
     try {
-        const {firstname, lastname, email, password, confirmpassword} = req.body;
+        const { firstname, lastname, email, password, confirmpassword } = req.body;
 
-        const isAgentAlreadyExists = await CustomerSupportModel.findOne({email: email});
+        const isAgentAlreadyExists = await CustomerSupportModel.findOne({ email: email });
 
-        if (isAgentAlreadyExists) return res.status(400).json({message: "Agent already exists."});
+        if (isAgentAlreadyExists) return res.status(400).json({ message: "Agent already exists." });
 
-        if (password !== confirmpassword) return res.status(400).json({message: "The password and confirm password fields do not match."});
+        if (password !== confirmpassword) return res.status(400).json({ message: "The password and confirm password fields do not match." });
 
         const hashedPassword = hashPassword(password);
 
@@ -201,7 +201,7 @@ exports.registerTestAgent = async (req, res, next) => {
             password: hashedPassword
         });
 
-        if (!createAgent) return res.status(400).json({message: "Unable to create an account."});
+        if (!createAgent) return res.status(400).json({ message: "Unable to create an account." });
 
         res.status(201).json(
             {
@@ -212,7 +212,7 @@ exports.registerTestAgent = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: "error occured during account creation."});
+        res.status(500).json({ message: "error occured during account creation." });
     }
 
 };
