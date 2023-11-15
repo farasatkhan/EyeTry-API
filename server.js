@@ -9,7 +9,7 @@ require('./src/api/v1/services/database');
 
 var AuthRouter = require('./src/api/v1/routes/auth');
 var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
-var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
+
 
 var UsersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
@@ -21,7 +21,9 @@ var FAQRouter = require('./src/api/v1/routes/FAQ/FAQ');
 var ReviewsRouter = require('./src/api/v1/routes/Products/Reviews');
 var OrderRouter = require('./src/api/v1/routes/order');
 
-
+var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
+var AgentRouter = require('./src/api/v1/routes/supportAgent')
+var TicketRouter = require('./src/api/v1/routes/tickets')
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
@@ -62,9 +64,12 @@ app.use('/v1/faq', FAQRouter);
 app.use('/products/v1/reviews', ReviewsRouter);
 app.use('/products/v1/order', OrderRouter);
 
+// Support Tickets
+app.use('/support', TicketRouter)
+
 // Customer Support 
 app.use('/agent/auth', AgentAuthRouter)
-
+app.use('/agent', AgentRouter)
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
