@@ -10,6 +10,7 @@ require('./src/api/v1/services/database');
 var AuthRouter = require('./src/api/v1/routes/auth');
 var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
 
+
 var UsersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
 var ProductRouter = require('./src/api/v1/routes/products');
@@ -19,8 +20,17 @@ var CategoryRouter = require('./src/api/v1/routes/Products/Category');
 var FAQRouter = require('./src/api/v1/routes/FAQ/FAQ');
 var ReviewsRouter = require('./src/api/v1/routes/Products/Reviews');
 var OrderRouter = require('./src/api/v1/routes/order');
+var paymentRouter = require('./src/api/v1/routes/payment');
+
+var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
+var AgentRouter = require('./src/api/v1/routes/supportAgent')
+var TicketRouter = require('./src/api/v1/routes/tickets')
 
 
+
+var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
+var AgentRouter = require('./src/api/v1/routes/supportAgent')
+var TicketRouter = require('./src/api/v1/routes/tickets')
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
@@ -53,6 +63,7 @@ app.use('/admin/auth', AdminAuthRouter);
 app.use('/users', UsersRouter);
 app.use('/admin', AdminRouter);
 app.use('/products/', ProductRouter)
+app.use('/payment/', paymentRouter)
 
 app.use('/products/v1/glasses', GlassesRouter);
 app.use('/products/v1/category', CategoryRouter);
@@ -60,6 +71,12 @@ app.use('/v1/faq', FAQRouter);
 app.use('/products/v1/reviews', ReviewsRouter);
 app.use('/products/v1/order', OrderRouter);
 
+// Support Tickets
+app.use('/support', TicketRouter)
+
+// Customer Support 
+app.use('/agent/auth', AgentAuthRouter)
+app.use('/agent', AgentRouter)
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
@@ -67,12 +84,12 @@ app.use('/test/product', testProductRouter);
 app.use('/test/vision_assessment', testVisionAssessmentRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

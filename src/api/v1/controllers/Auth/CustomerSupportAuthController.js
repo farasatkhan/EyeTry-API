@@ -1,15 +1,10 @@
 require('dotenv').config({ path: './src/config/.env' });
 
-var express = require('express');
 const jwt = require('jsonwebtoken');
-
-var router = express.Router();
 
 const { hashPassword, comparePassword } = require('../../helpers/hashing');
 
-var UsersModel = require('../../models/User');
-
-var CustomerSupportModel = require('../../models/CustomerSupport');
+var CustomerSupportModel = require('../../models/CustomerSupport')
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
@@ -18,36 +13,36 @@ var CustomerSupportModel = require('../../models/CustomerSupport');
 var tokens = require('../../helpers/refreshToken');
 // const refreshTokens = [];
 
+
+/*
+    Customer Support Registration is only used for testing purposes. Customer Support cannot register account normally.
+    Admin would be responsible for creating their account
+*/
 exports.register = async (req, res, next) => {
     try {
 
-        // Check if user is already logged in
-        const authorizationHeader = req.headers['authorization'];
-        const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
-
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({ message: "User is logged in." });
-
         const { firstname, lastname, email, password, confirmpassword } = req.body;
 
-        const isUserAlreadyExists = await UsersModel.findOne({ email: email });
+        const isAgentAlreadyExists = await CustomerSupportModel.findOne({ email: email });
 
-        if (isUserAlreadyExists) return res.status(400).json({ message: "User already exists." });
+        if (isAgentAlreadyExists) return res.status(400).json({ message: "Agent already exists." });
 
         if (password !== confirmpassword) return res.status(400).json({ message: "The password and confirm password fields do not match." });
 
         const hashedPassword = hashPassword(password);
 
-        const createUser = await UsersModel.create({
+        const createAgent = await CustomerSupportModel.create({
             firstName: firstname,
             lastName: lastname,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: "customer_support"
         });
 
-        if (!createUser) return res.status(400).json({ message: "Unable to create an account." });
+        if (!createAgent) return res.status(400).json({ message: "Unable to create an account." });
 
-        const token = this.generateAccessToken(createUser);
-        const refreshToken = this.generateRefreshToken(createUser);
+        const token = this.generateAccessToken(createAgent);
+        const refreshToken = this.generateRefreshToken(createAgent);
 
         tokens.addRefreshTokens(refreshToken);
 
@@ -55,10 +50,10 @@ exports.register = async (req, res, next) => {
 
         res.status(201).json(
             {
-                user: createUser,
+                user: createAgent,
                 accessToken: token,
                 refreshToken: refreshToken,
-                message: "User account is created."
+                message: "Agent account is created."
             }
         );
 
@@ -72,27 +67,31 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     try {
 
-        // Check if user is already logged in
         const authorizationHeader = req.headers['authorization'];
         const Authtoken = authorizationHeader && authorizationHeader.split(' ')[1];
 
         console.log("Verify Auth Access:", this.verifyAccessToken(Authtoken));
         console.log("Verify Refresh Access:", this.verifyRefreshToken(Authtoken));
 
-        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({ message: "User is already logged in." });
+        if (this.verifyAccessToken(Authtoken)) return res.status(301).json({ message: "Agent is already logged in." });
 
         const { email, password } = req.body;
 
-        const isUserExists = await UsersModel.findOne({ email: email });
+        const agent = await CustomerSupportModel.findOne({ email: email });
 
-        if (!isUserExists) return res.status(400).json({ message: "User account not found." });
+        if (!agent) return res.status(400).json({ message: "Agent account not found." });
 
-        const comparedPassword = comparePassword(password, isUserExists.password);
+        const comparedPassword = comparePassword(password, agent.password);
 
         if (!comparedPassword) return res.status(400).json({ message: "Password is incorrect." });
 
-        const token = this.generateAccessToken(isUserExists);
-        const refreshToken = this.generateRefreshToken(isUserExists);
+        // const agentObject = {
+        //     email: agent.email,
+        //     role: agent.role
+        // }
+
+        const token = this.generateAccessToken(agent);
+        const refreshToken = this.generateRefreshToken(agent);
 
         tokens.addRefreshTokens(refreshToken);
 
@@ -100,10 +99,10 @@ exports.login = async (req, res, next) => {
 
         res.status(201).json(
             {
-                user: isUserExists,
+                user: agent,
                 accessToken: token,
                 refreshToken: refreshToken,
-                message: "User is logged in."
+                message: "Support Agent is logged in."
             }
         );
 
@@ -120,23 +119,24 @@ exports.logout = (req, res, next) => {
 };
 
 exports.generateAccessToken = (user) => {
-    return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60m' });
+    return jwt.sign({ id: user.id }, process.env.AGENT_ACCESS_TOKEN_SECRET, { expiresIn: '60m' });
 };
 
 exports.generateRefreshToken = (user) => {
-    return jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.sign({ id: user.id }, process.env.AGENT_REFRESH_TOKEN_SECRET);
 }
 
 exports.generateNewAccessToken = (req, res, next) => {
 
     try {
+
         const refreshToken = req.body.token;
 
         if (refreshToken == null) return res.status(401).json({ message: "No refresh token is present." });
 
         if (!tokens.getRefreshTokens().includes(refreshToken)) return res.status(403).json({ message: "Invalid refresh token." });
 
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        jwt.verify(refreshToken, process.env.AGENT_REFRESH_TOKEN_SECRET, (err, user) => {
 
             if (err) return res.status(403).json({ message: "Invalid refresh token is present." });
 
@@ -157,7 +157,7 @@ exports.authenticateToken = (req, res, next) => {
 
     if (token == null) return res.status(401).json({ message: "No authorization header is present." });
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.AGENT_ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.status(403).json({ message: "Invalid Token." });
 
         req.user = user;
@@ -165,8 +165,21 @@ exports.authenticateToken = (req, res, next) => {
     });
 };
 
+exports.verifyToken = (req, res, next) => {
+    const authorizationHeader = req.headers['authorization'];
+    const token = authorizationHeader && authorizationHeader.split(' ')[1];
+
+    if (token == null) return res.status(401).json({ message: "No authorization header is present." });
+
+    jwt.verify(token, process.env.AGENT_ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: "Invalid Token." });
+
+        res.sendStatus(200);
+    });
+};
+
 exports.verifyAccessToken = (token) => {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, res) => {
+    return jwt.verify(token, process.env.AGENT_ACCESS_TOKEN_SECRET, (err, res) => {
         if (err) return false;
 
         return true;
@@ -174,45 +187,9 @@ exports.verifyAccessToken = (token) => {
 };
 
 exports.verifyRefreshToken = (refreshToken) => {
-    return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, res) => {
+    return jwt.verify(refreshToken, process.env.AGENT_REFRESH_TOKEN_SECRET, (err, res) => {
         if (err) return false;
 
         return true;
     });
-};
-
-// this is a test registration route for agent. do not use it.
-exports.registerTestAgent = async (req, res, next) => {
-    try {
-        const { firstname, lastname, email, password, confirmpassword } = req.body;
-
-        const isAgentAlreadyExists = await CustomerSupportModel.findOne({ email: email });
-
-        if (isAgentAlreadyExists) return res.status(400).json({ message: "Agent already exists." });
-
-        if (password !== confirmpassword) return res.status(400).json({ message: "The password and confirm password fields do not match." });
-
-        const hashedPassword = hashPassword(password);
-
-        const createAgent = await CustomerSupportModel.create({
-            firstName: firstname,
-            lastName: lastname,
-            email: email,
-            password: hashedPassword
-        });
-
-        if (!createAgent) return res.status(400).json({ message: "Unable to create an account." });
-
-        res.status(201).json(
-            {
-                user: createAgent,
-                message: "User account is created."
-            }
-        );
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "error occured during account creation." });
-    }
-
 };
