@@ -15,6 +15,7 @@ var Users = require('../../models/User');
 var Prescription = require('../../models/Prescription');
 var Payment = require('../../models/Payment');
 var GiftCard = require('../../models/Giftcard');
+var Glasses = require('../../models/Products/Glasses');
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
@@ -658,6 +659,8 @@ exports.deleteAddress = async (req, res, next) => {
 // Add to Wishlist
 exports.addWishlist = async (req, res, next) => {
     try {
+
+        console.log("working this");
 
         const { productId } = req.body;
 
