@@ -115,6 +115,40 @@ exports.viewGlassesList = async (req, res, next) => {
     }
 }
 
+exports.viewEyeglassesList = async (req, res, next) => {
+    try {
+        const productList = await GlassesModel.find({type: "Eyeglasses"}, {__v: 0}).sort({ _id: -1 });
+
+        if (!productList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching glasses"
+        });
+
+        res.status(200).json(productList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching glasses"})
+    }
+}
+
+exports.viewSunglassesList = async (req, res, next) => {
+    try {
+        const productList = await GlassesModel.find({type: "Sunglasses"}, {__v: 0}).sort({ _id: -1 });
+
+        if (!productList) return res.status(400).json(
+        {
+            message: "400: Error occured while fetching glasses"
+        });
+
+        res.status(200).json(productList);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "500: Error occured while fetching glasses"})
+    }
+}
+
 exports.viewParticularGlasses = async (req, res, next) => {
     try {
         const glassesId = req.params.glassesId;
