@@ -117,7 +117,7 @@ exports.viewGlassesList = async (req, res, next) => {
 
 exports.viewEyeglassesList = async (req, res, next) => {
     try {
-        const productList = await GlassesModel.find({}, {__v: 0}).sort({ _id: -1 });
+        const productList = await GlassesModel.find({type: "Eyeglasses"}, {__v: 0}).sort({ _id: -1 });
 
         if (!productList) return res.status(400).json(
         {
@@ -134,7 +134,7 @@ exports.viewEyeglassesList = async (req, res, next) => {
 
 exports.viewSunglassesList = async (req, res, next) => {
     try {
-        const productList = await GlassesModel.find({}, {__v: 0}).sort({ _id: -1 });
+        const productList = await GlassesModel.find({type: "Sunglasses"}, {__v: 0}).sort({ _id: -1 });
 
         if (!productList) return res.status(400).json(
         {

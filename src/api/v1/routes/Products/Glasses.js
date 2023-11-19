@@ -21,5 +21,4 @@ router.delete('/:glassesId/images/:imageId', GlassesController.deleteProductImag
 router.get('newArrivals', GlassesController.viewNewArrivals);
 
 
-
 module.exports = router;
