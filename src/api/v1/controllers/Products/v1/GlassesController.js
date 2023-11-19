@@ -3,6 +3,7 @@ const path = require('path');
 var { randomImageName } = require('../../../helpers/hashing');
 
 var GlassesModel = require('../../../models/Products/Glasses.js');
+var Review = require('../../../models/Products/Review.js');
 
 exports.addGlasses = async (req, res, next) => {
     try {
@@ -118,7 +119,14 @@ exports.viewParticularGlasses = async (req, res, next) => {
     try {
         const glassesId = req.params.glassesId;
 
-        const productList = await GlassesModel.findOne({_id: glassesId}, {__v: 0}).sort({ _id: -1 });
+        const productList = await GlassesModel.findOne({_id: glassesId}, {__v: 0}).sort({ _id: -1 }).populate({
+            path: 'reviewsInformation.user_reviews',
+            model: Review,
+            populate: {
+                path: 'user',
+                model: 'User'
+            }
+        });;
 
         if (!productList) return res.status(400).json(
         {
