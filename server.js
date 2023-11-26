@@ -10,7 +10,6 @@ require('./src/api/v1/services/database');
 var AuthRouter = require('./src/api/v1/routes/auth');
 var AdminAuthRouter = require('./src/api/v1/routes/adminAuth');
 
-
 var UsersRouter = require('./src/api/v1/routes/users');
 var AdminRouter = require('./src/api/v1/routes/admin');
 var ProductRouter = require('./src/api/v1/routes/products');
@@ -25,8 +24,6 @@ var paymentRouter = require('./src/api/v1/routes/payment');
 var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
 var AgentRouter = require('./src/api/v1/routes/supportAgent')
 var TicketRouter = require('./src/api/v1/routes/tickets')
-
-
 
 var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
 var AgentRouter = require('./src/api/v1/routes/supportAgent')
@@ -55,7 +52,7 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'PUT', 'POST', 'DELETE'],
-  allowedHeaders: ['Authorization', 'Content-Type']
+  allowedHeaders: ['Authorization', 'Content-Type', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials']
 }));
 
 app.use('/auth', AuthRouter);

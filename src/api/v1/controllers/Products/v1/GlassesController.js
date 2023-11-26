@@ -400,4 +400,17 @@ exports.viewNewArrivals = async (req, res, next) => {
       res.status(500).json({ message: '500: Error occurred while fetching new arrivals' });
     }
 }
-  
+
+exports.retrieveImage = async (req, res, next) => {
+    const imageName = req.params.imageName;
+
+    try {
+        const imagePath = path.join(__dirname, '..', '..', '..', '..', '..', '..', 'public', 'uploads', 'products', 'glasses', imageName);
+        console.log(imagePath);
+        res.sendFile(imagePath);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: '500: Error occured while retrieving image.'})
+    }
+}
