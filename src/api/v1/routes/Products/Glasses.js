@@ -20,5 +20,6 @@ router.delete('/:glassesId/images/:imageId', GlassesController.deleteProductImag
 // Web user side glasses routes
 router.get('newArrivals', GlassesController.viewNewArrivals);
 
+router.get('/retrieve/:imageName', GlassesController.retrieveImage);
 
 module.exports = router;
