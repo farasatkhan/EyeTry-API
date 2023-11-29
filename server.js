@@ -28,6 +28,8 @@ var TicketRouter = require('./src/api/v1/routes/tickets')
 var AgentAuthRouter = require('./src/api/v1/routes/agentAuth')
 var AgentRouter = require('./src/api/v1/routes/supportAgent')
 var TicketRouter = require('./src/api/v1/routes/tickets')
+var ChatRouter = require('./src/api/v1/routes/chat')
+var MessageRouter = require('./src/api/v1/routes/message')
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
@@ -46,7 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'np')));
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:3000', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:3000', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000','http://localhost:5173'];
 
 app.use(cors({
   origin: allowedOrigins,
@@ -74,6 +76,11 @@ app.use('/support', TicketRouter)
 // Customer Support 
 app.use('/agent/auth', AgentAuthRouter)
 app.use('/agent', AgentRouter)
+
+// Chats 
+app.use('/chat',ChatRouter)
+app.use('/message',MessageRouter)
+
 /*
     The goal of the test router is to facilite the testing of other routes.
 */
