@@ -1051,3 +1051,21 @@ exports.viewVisionAssessmentResult = async (req, res, next) => {
         res.status(500).json({ message: "Internal error occured in viewing vision assessment route." })
     }
 }
+
+exports.viewUserInfo = async (req,res) =>{
+    const userId = req.params.id
+    if(!userId){
+        res.status(400).json({message: "Id not provided via params" })
+    }
+    try {
+        const user = await Users.findById(userId).select("-password -tryOnImages -wishlist -prescriptions -payments -addressBook -visionAssessments");
+        console.log(user )
+        if (!user) return res.status(400).json({ message: "User account not found." });
+
+        res.status(200).json(user);
+    }
+    catch(e){
+        console.log(e)
+        res.status(500).json({ message: "Internal Server error occured in retrieving user info" })
+    }
+}

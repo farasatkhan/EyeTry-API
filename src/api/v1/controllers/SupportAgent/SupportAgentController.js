@@ -172,6 +172,20 @@ exports.deleteProfileImageServer = async (req, res, next) => {
 }
 
 
+exports.viewAgentInfo = async (req,res) =>{
+    const userId = req.params.id
+    if(!userId){
+        res.status(400).json({message: "Id not provided via params" })
+    }
+    try {
+        const user = await CustomerSupportModel.findById(userId).select("-password -tickets -chatHistory");
+        console.log(user )
+        if (!user) return res.status(400).json({ message: "Agent account not found." });
 
-
-
+        res.status(200).json(user);
+    }
+    catch(e){
+        console.log(e)
+        res.status(500).json({ message: "Internal Server error occured in retrieving agnet info" })
+    }
+}
