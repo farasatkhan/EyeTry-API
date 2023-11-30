@@ -46,7 +46,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'np')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:3000', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000','http://localhost:5173'];
 
