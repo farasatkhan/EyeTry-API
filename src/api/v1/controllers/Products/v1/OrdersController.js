@@ -1,11 +1,7 @@
-var OrderModel = require('../../../models/Order.js');
-
-
+var OrderModel = require("../../../models/Order.js");
 
 exports.checkout = async (req, res, next) => {
-
   try {
-    // Extract the entire order object from the request body
     const orderData = req.body;
 
     console.log("Checkout Received Data:", orderData);
@@ -36,25 +32,31 @@ exports.updateOrderDeliveryStatus = async (req, res, next) => {
 
     console.log(deliveryStatus);
 
-    const updatedOrderInfo = await OrderModel.findByIdAndUpdate(orderId, {deliveryStatus: deliveryStatus}, {new: true});
+    const updatedOrderInfo = await OrderModel.findByIdAndUpdate(
+      orderId,
+      { deliveryStatus: deliveryStatus },
+      { new: true }
+    );
 
-    if (!updatedOrderInfo) return res.status(400).json({message: "400: Error occured while updating order."});
+    if (!updatedOrderInfo)
+      return res
+        .status(400)
+        .json({ message: "400: Error occured while updating order." });
 
     res.status(200).json({
-        products: updatedOrderInfo,
-        message: "Information is updated successfully."
+      products: updatedOrderInfo,
+      message: "Information is updated successfully.",
     });
   } catch (error) {
-      console.log(error);
-      res.status(500).json({message: "500: Error occured while updating order."});
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "500: Error occured while updating order." });
   }
-}
-
-
+};
 
 // Define the route to view all orders placed by a user
 exports.viewAllOrders = async (req, res, next) => {
-  
   const userId = req.params.userId;
 
   try {
@@ -64,24 +66,194 @@ exports.viewAllOrders = async (req, res, next) => {
     res.status(200).json({ orders });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "500: Error occurred while fetching orders." });
+    res
+      .status(500)
+      .json({ message: "500: Error occurred while fetching orders." });
   }
 };
 
-
 exports.orderAnalytics = async (req, res, next) => {
   try {
-
     const allOrders = await OrderModel.find();
 
-    if (!allOrders) return res.status(400).json({message: "400: Error occured while getting orders."});
+    if (!allOrders)
+      return res
+        .status(400)
+        .json({ message: "400: Error occured while getting orders." });
 
     const totalOrders = allOrders.length;
-    const pendingOrders = allOrders.filter(order => order.deliveryStatus === 'Pending').length;
-    const deliveredOrders = allOrders.filter(order => order.deliveryStatus === 'Delivered').length;
+    const pendingOrders = allOrders.filter(
+      (order) => order.deliveryStatus === "Pending"
+    ).length;
+    const deliveredOrders = allOrders.filter(
+      (order) => order.deliveryStatus === "Delivered"
+    ).length;
+    const totalRevenue = allOrders
+      .reduce((sum, order) => sum + parseFloat(order.totalPrice), 0)
+      .toFixed(2);
+    const totalTransactions = allOrders.length;
+    const readyOrders = allOrders.filter(
+      (order) => order.deliveryStatus === "Pending"
+    ).length;
 
-    res.status(200).json({ totalOrders: totalOrders,  pendingOrders: pendingOrders, deliveredOrders: deliveredOrders});
+    const currentDate = new Date();
+    const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
 
+    const salesByDay = {};
+
+    for (let i = thirtyDaysAgo; i <= currentDate; i.setDate(i.getDate() + 1)) {
+      const day = String(i.getDate()).padStart(2, '0');
+      const month = String(i.getMonth() + 1).padStart(2, '0');
+      const year = i.getFullYear();
+      const fullDate = `${year}-${month}-${day}`;
+
+      salesByDay[fullDate] = 0;
+    }
+
+    allOrders.forEach(order => {
+      const orderDate = new Date(order.orderDate);
+      const day = String(orderDate.getDate()).padStart(2, '0');
+      const month = String(orderDate.getMonth() + 1).padStart(2, '0');
+      const year = orderDate.getFullYear();
+      const fullDate = `${year}-${month}-${day}`;
+
+      const totalPrice = parseFloat(order.totalPrice);
+      salesByDay[fullDate] += totalPrice;
+    });
+
+    const salesChart = Object.entries(salesByDay)
+    .filter(([date]) => !isNaN(new Date(date)))
+    .map(([date, amount]) => ({
+      date,
+      amount
+    }));
+
+    const getTotalSalesByMonth = () => {
+      const monthlySales = Array.from({ length: 12 }, (_, i) => ({
+        name: new Date(2023, i, 1).toLocaleString('default', { month: 'short' }),
+        value: 0,
+      }));
+    
+      allOrders.forEach(order => {
+        const orderDate = new Date(order.orderDate);
+        const month = orderDate.getMonth();
+        const totalPrice = parseFloat(order.totalPrice);
+    
+        monthlySales[month].value += totalPrice;
+      });
+    
+      return monthlySales;
+    };
+    
+    const revenueChart = getTotalSalesByMonth();
+
+    const getOrdersByMonth = () => {
+      const monthlyOrders = Array.from({ length: 12 }, (_, i) => ({
+        name: new Date(2023, i, 1).toLocaleString('default', { month: 'short' }),
+        value: 0,
+      }));
+    
+      allOrders.forEach(order => {
+        const orderDate = new Date(order.orderDate);
+        const month = orderDate.getMonth();
+    
+        monthlyOrders[month].value++;
+      });
+    
+      return monthlyOrders;
+    };
+    
+    const totalOrderChart = getOrdersByMonth();
+
+    const getDeliveredOrdersByMonth = () => {
+      const deliveredOrdersByMonth = {};
+    
+      allOrders.forEach(order => {
+        const status = order.deliveryStatus;
+        const orderDate = new Date(order.orderDate);
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(orderDate);
+        const monthYear = `${monthName}-${orderDate.getFullYear()}`;
+    
+        if (!deliveredOrdersByMonth[monthYear]) {
+          deliveredOrdersByMonth[monthYear] = 0;
+        }
+    
+        if (status === 'Delivered') {
+          deliveredOrdersByMonth[monthYear]++;
+        }
+      });
+    
+      return deliveredOrdersByMonth;
+    };
+    
+    const deliveredOrdersByMonth = getDeliveredOrdersByMonth();
+    
+    // Generate an array with all months in a year
+    const deliveredMonthsOfYear = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(Date.UTC(new Date().getFullYear(), i, 1));
+      return {
+        name: new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date),
+        value: 0,
+      };
+    });
+    
+    // Merge the counts with the array of all months
+    const deliveredOrdersChart = deliveredMonthsOfYear.map(month => ({
+      ...month,
+      value: deliveredOrdersByMonth[`${month.name}-${new Date().getFullYear()}`] || 0,
+    }));
+
+    const getPendingOrdersByMonth = () => {
+      const pendingOrdersByMonth = {};
+    
+      allOrders.forEach(order => {
+        const status = order.deliveryStatus;
+        const orderDate = new Date(order.orderDate);
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(orderDate);
+        const monthYear = `${monthName}-${orderDate.getFullYear()}`;
+    
+        if (!pendingOrdersByMonth[monthYear]) {
+          pendingOrdersByMonth[monthYear] = 0;
+        }
+    
+        if (status === 'Pending') {
+          pendingOrdersByMonth[monthYear]++;
+        }
+      });
+    
+      return pendingOrdersByMonth;
+    };
+    
+    const pendingOrdersByMonth = getPendingOrdersByMonth();
+    
+    // Generate an array with all months in a year
+    const pendingMonthsOfYear = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(Date.UTC(new Date().getFullYear(), i, 1));
+      return {
+        name: new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date),
+        value: 0,
+      };
+    });
+    
+    // Merge the counts with the array of all months
+    const pendingOrdersChart = pendingMonthsOfYear.map(month => ({
+      ...month,
+      value: pendingOrdersByMonth[`${month.name}-${new Date().getFullYear()}`] || 0,
+    }));
+
+    res.status(200).json({
+      salesChart: salesChart,
+      revenueChart: revenueChart,
+      totalOrderChart: totalOrderChart,
+      pendingOrdersChart: pendingOrdersChart,
+      deliveredOrdersChart: deliveredOrdersChart,
+      totalOrders: totalOrders,
+      pendingOrders: pendingOrders,
+      deliveredOrders: deliveredOrders,
+      totalRevenue: totalRevenue,
+      totalTransactions: totalTransactions,
+      readyOrders: readyOrders,
+    });
   } catch (err) {
     res.status(500).json({ error: err });
   }
