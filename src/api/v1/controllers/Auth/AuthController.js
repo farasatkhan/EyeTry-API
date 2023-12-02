@@ -131,7 +131,7 @@ exports.generateNewAccessToken = (req, res, next) => {
 
     try {
         const refreshToken = req.body.token;
-
+        console.log("Refreh", refreshToken)
         if (refreshToken == null) return res.status(401).json({ message: "No refresh token is present." });
 
         if (!tokens.getRefreshTokens().includes(refreshToken)) return res.status(403).json({ message: "Invalid refresh token." });
