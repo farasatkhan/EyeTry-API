@@ -106,4 +106,37 @@ exports.viewAllReviews = async (req, res, next) => {
       res.status(500).json({ message: "500: Error occurred when fetching reviews." });
     }
   };
+
+exports.reviewsAnalytics = async (req, res, next) => {
+    try {
+        const allOrders = await ReviewModel.find();
+
+        const countReviewsByStars = () => {
+            const starsCount = {
+              'star_1': 0,
+              'star_2': 0,
+              'star_3': 0,
+              'star_4': 0,
+              'star_5': 0,
+              "total_reviews": allOrders.length
+            };
+          
+            allOrders.forEach(review => {
+              let stars = Math.round(review.stars);
+              stars = Math.min(Math.max(stars, 1), 5);
+          
+              starsCount["star_"+stars.toString()]++;
+            });
+          
+            return starsCount;
+          };
+          
+          const reviewsAnalytics = countReviewsByStars();
+    
+        res.status(200).json(reviewsAnalytics);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "500: Error occurred when fetching reviews analytics."});
+      }
+}
   

@@ -37,4 +37,7 @@ router.post('/user/unban/:customerId', AdminController.unbanUser);
 router.put('/agent/ban/:agentId', AdminController.banAgent);
 router.post('/agent/unban/:agentId', AdminController.unbanAgent);
 
+router.get('/customer/analytics', AdminController.customerAnalytics);
+router.get('/agents/analytics', AdminController.agentsAnalytics);
+
 module.exports = router;
