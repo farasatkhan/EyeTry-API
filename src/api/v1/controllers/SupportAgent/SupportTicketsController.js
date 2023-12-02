@@ -9,8 +9,7 @@ var SupportTicketModel = require('../../models/SupportTicket')
 exports.createTicket = async (req, res, next) => {
     try {
         const customer = await UserModel.findById(req.user.id).select("firstName lastName"); // returns 
-
-        if (!customer) return res.status(400).json({ message: "Support Agent account not found." });
+        if (!customer) return res.status(400).json({ message: "User Account account not found." });
         const { dateIssued, orderNumber, type, priority, status, description } = req.body
         const ticket = await SupportTicketModel.create({
             customerId: req.user.id,
@@ -19,7 +18,7 @@ exports.createTicket = async (req, res, next) => {
             orderNumber: orderNumber,
             type: type,
             priority: priority,
-            status: status,
+            status: "Open",
             description: description
         });
         if (!ticket) return res.status(400).json({ message: "400: Error occured while creating ticket" });
