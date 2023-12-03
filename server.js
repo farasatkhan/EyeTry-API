@@ -48,7 +48,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5001', 'http://127.0.0.1:3000', 'http://127.0.0.1:5001', 'http://127.0.0.1:5000','http://localhost:5173'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000',
+  'http://localhost:5001', 'http://127.0.0.1:3000',
+  'http://127.0.0.1:5001', 'http://127.0.0.1:5000',
+  'http://localhost:5173'];
 
 app.use(cors({
   origin: allowedOrigins,
@@ -78,8 +81,8 @@ app.use('/agent/auth', AgentAuthRouter)
 app.use('/agent', AgentRouter)
 
 // Chats 
-app.use('/chat',ChatRouter)
-app.use('/message',MessageRouter)
+app.use('/chat', ChatRouter)
+app.use('/message', MessageRouter)
 
 /*
     The goal of the test router is to facilite the testing of other routes.
