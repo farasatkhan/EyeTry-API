@@ -1,3 +1,4 @@
+const GiftCardModel = require("../../../models/Giftcard.js");
 var OrderModel = require("../../../models/Order.js");
 
 exports.checkout = async (req, res, next) => {
@@ -69,6 +70,23 @@ exports.viewAllOrders = async (req, res, next) => {
     res
       .status(500)
       .json({ message: "500: Error occurred while fetching orders." });
+  }
+};
+
+// Define the route to view all orders placed by a user
+exports.getGiftcard = async (req, res, next) => {
+  const coupen = req.params.coupen;
+
+  try {
+    // Find all orders associated with the user
+    const giftcards = await GiftCardModel.find({ code: coupen });
+
+    res.status(200).json({ giftcards });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "500: Error occurred while fetching giftcards." });
   }
 };
 
