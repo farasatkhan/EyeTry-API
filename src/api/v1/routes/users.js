@@ -56,4 +56,6 @@ router.delete('/remove_tryon_image_server/:tryOnImageId', authenticateToken, Use
 router.post('/submit_vision_assessment_result', authenticateToken, UsersController.submitVisionAssessmentResult);
 router.get('/view_vision_assessment_result', authenticateToken, UsersController.viewVisionAssessmentResult);
 
+router.get('/view_image_server/:userId', UsersController.viewProfileImageServer);
+
 module.exports = router;

@@ -924,6 +924,26 @@ exports.viewProfileImageServer = async (req, res, next) => {
     }
 }
 
+exports.viewProfileImageServer = async (req, res, next) => {
+    try {
+
+        const userId = req.params.userId;
+        const imageId = await Users.findById(userId).select('profilePicture');
+        
+        if (!(imageId && imageId.profilePicture)) return res.status(404).json({ message: "Image not found" });
+
+        res.status(200).json(
+            {
+                profilePicture: imageId.profilePicture,
+                location: '/uploads/profile_images/' + imageId.profilePicture
+            });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Error occured while viewing image from server" })
+    }
+}
+
 // Delete Profile Image - Server
 exports.deleteProfileImageServer = async (req, res, next) => {
     try {

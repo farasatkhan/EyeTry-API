@@ -329,7 +329,7 @@ exports.viewProfileImageServer = async (req, res, next) => {
 
     if (!(imageId && imageId.profilePicture))
       return res
-        .status(400)
+        .status(404)
         .json({ message: "Error occured while retriving image id." });
 
     res.status(200).json({
