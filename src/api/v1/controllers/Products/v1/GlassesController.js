@@ -182,23 +182,45 @@ exports.updateGlasses = async (req, res, next) => {
         const { 
             name, sku, description, price, sku_model, frame_shape, rim_shape, currency, discount, type, categories, meta_title, meta_keywords,
             meta_description, manufacturer, frame_material, frame_size, measurement_type, lens_width, lens_height, total_width, 
-            bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status, frame_variants} = req.body;
+            bridge_width, temple_length, is_multifocal, face_shape, genders, stock_status} = req.body;
 
 
         const stock = (stock_status) => {
             if (stock_status === "in_stock") {
-                return { is_in_stock: true }
+                return { 
+                    is_in_stock: true, 
+                    is_out_of_stock: false, 
+                    is_to_be_announced: false, 
+                    is_low_stock: false
+                }
 
             } else if (stock_status === "out_of_stock") {
-                return { is_out_of_stock: true }
+                return { 
+                    is_in_stock: false, 
+                    is_out_of_stock: true, 
+                    is_to_be_announced: false, 
+                    is_low_stock: false
+                }
 
             } else if (stock_status === "to_be_announced") {
-                return { is_to_be_announced: true }
+                return { 
+                    is_in_stock: false, 
+                    is_out_of_stock: false, 
+                    is_to_be_announced: true, 
+                    is_low_stock: false
+                }
 
             } else if (stock_status === "low_stock") {
-                return { is_low_stock: true }
+                return { 
+                    is_in_stock: false, 
+                    is_out_of_stock: false, 
+                    is_to_be_announced: false, 
+                    is_low_stock: true
+                }
             }
         };
+
+        const frameVariant = await GlassesModel.findOne({_id: glassesId}).select('frame_information.frame_variants')
 
         const newUpdatedProductInformation = {
             name: name,
@@ -223,7 +245,7 @@ exports.updateGlasses = async (req, res, next) => {
             frame_information: {
                 frame_material: frame_material,
                 frame_size: frame_size,
-                frame_variants: frame_variants
+                frame_variants: frameVariant.frame_information.frame_variants
             },
             lens_information: {
                 measurement_type: measurement_type,
@@ -241,8 +263,11 @@ exports.updateGlasses = async (req, res, next) => {
             stock: stock(stock_status)
         }
 
-        const updatedProductInfo = await GlassesModel.findByIdAndUpdate(glassesId, newUpdatedProductInformation, {new: true});
-
+        const updatedProductInfo = await GlassesModel.findByIdAndUpdate(
+            glassesId, 
+            {...newUpdatedProductInformation},
+            {new: true});
+        
         if (!updatedProductInfo) return res.status(400).json({message: "400: Error occured while updating product."});
 
         res.status(200).json({
