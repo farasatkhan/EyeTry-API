@@ -14,7 +14,7 @@ router.post('/forget_password', UsersController.forgetPassword);
 router.post('/reset_password', UsersController.resetPassword);
 
 router.post('/add_prescription', authenticateToken, UsersController.addPrescription);
-router.post('/view_prescriptions', authenticateToken, UsersController.viewAllPrescriptions);
+router.get('/view_prescriptions', authenticateToken, UsersController.viewAllPrescriptions);
 router.get('/view_prescription/:prescriptionId', authenticateToken, UsersController.viewPrescription);
 router.put('/update_prescription/:prescriptionId', authenticateToken, UsersController.updatePrescription);
 router.delete('/delete_prescription/:prescriptionId', authenticateToken, UsersController.deletePrescription);
