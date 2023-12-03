@@ -241,7 +241,7 @@ exports.updateGlasses = async (req, res, next) => {
             stock: stock(stock_status)
         }
 
-        const updatedProductInfo = await Giftcard.findByIdAndUpdate(glassesId, newUpdatedProductInformation, {new: true});
+        const updatedProductInfo = await GlassesModel.findByIdAndUpdate(glassesId, newUpdatedProductInformation, {new: true});
 
         if (!updatedProductInfo) return res.status(400).json({message: "400: Error occured while updating product."});
 
