@@ -73,22 +73,35 @@ exports.viewAllOrders = async (req, res, next) => {
   }
 };
 
-// Define the route to view all orders placed by a user
+// getting giftcard and updating status
+
 exports.getGiftcard = async (req, res, next) => {
   const coupen = req.params.coupen;
 
   try {
-    // Find all orders associated with the user
-    const giftcards = await GiftCardModel.find({ code: coupen });
+    // Find the gift card associated with the provided code
+    const giftcard = await GiftCardModel.findOne({ code: coupen });
 
-    res.status(200).json({ giftcards });
+    if (!giftcard) {
+      return res.status(404).json({ message: "Gift card not found." });
+    }
+
+    // Check if the status is already "Expired"
+    if (giftcard.status === "Expired") {
+      return res.status(200).json({ message: "Gift card has already expired." });
+    }
+
+    // If not expired, update the status to "Expired"
+    await GiftCardModel.findOneAndUpdate({ code: coupen }, { $set: { status: "Expired" } });
+
+    // Return the gift card details
+    res.status(200).json({ giftcard });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "500: Error occurred while fetching giftcards." });
+    res.status(500).json({ message: "500: Error occurred while fetching gift cards." });
   }
 };
+
 
 exports.orderAnalytics = async (req, res, next) => {
   try {
