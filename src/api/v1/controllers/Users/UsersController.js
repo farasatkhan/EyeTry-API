@@ -903,8 +903,8 @@ exports.viewProfileImageServer = async (req, res, next) => {
         res.status(500).json({ message: "Internal Error occured while viewing image from server" })
     }
 }
-
-exports.viewProfileImageServer = async (req, res, next) => {
+ 
+exports.viewProfileImageServerById = async (req, res, next) => {
     try {
 
         const userId = req.params.userId;
