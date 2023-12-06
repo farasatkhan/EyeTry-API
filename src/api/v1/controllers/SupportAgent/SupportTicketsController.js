@@ -23,7 +23,7 @@ exports.createTicket = async (req, res, next) => {
         });
         if (!ticket) return res.status(400).json({ message: "400: Error occured while creating ticket" });
 
-        res.status(200).json(ticket);
+        res.status(200).json(ticket)
 
     } catch (error) {
         console.log(error);

@@ -13,8 +13,14 @@ function randomImageName(bytes = 16) {
     return crypto.randomBytes(bytes).toString('hex');
 }
 
+function hashPasswordResetToken(bytes = 32){
+    let password_reset_token =  crypto.randomBytes(bytes).toString('hex');
+    return bcrypt.hashSync(password_reset_token, bcrypt.genSaltSync());
+}
+
 module.exports = {
     hashPassword,
     comparePassword,
-    randomImageName
+    randomImageName,
+    hashPasswordResetToken
 };

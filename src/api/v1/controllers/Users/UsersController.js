@@ -6,16 +6,18 @@ var express = require('express');
 var router = express.Router();
 
 const S3Storage = require('../../services/S3Storage');
+const API_URL = 'http://localhost:3000/'
 
 var AuthController = require('../Auth/AuthController');
 
-const { comparePassword, hashPassword, randomImageName } = require('../../helpers/hashing');
+const { comparePassword, hashPassword, randomImageName,hashPasswordResetToken } = require('../../helpers/hashing');
 
 var Users = require('../../models/User');
 var Prescription = require('../../models/Prescription');
 var Payment = require('../../models/Payment');
 var GiftCard = require('../../models/Giftcard');
 var Glasses = require('../../models/Products/Glasses');
+var PasswordResetToken = require('../../models/PasswordResetToken')
 
 /*
     TODO: Store JWT tokens in the database once authentication is completed
@@ -150,14 +152,27 @@ exports.changePassword = async (req, res, next) => {
     These features can be implemented once reset email is implemented
 */
 exports.forgetPassword = async (req, res, next) => {
+    
     try {
 
         const { email } = req.body;
 
-        const UserDocs = await Users.findOne({ email: email });
+        const user = await Users.findOne({ email: email });
 
-        if (!UserDocs) return res.status(400).json({ message: "User not found." });
+        if (!user) return res.status(400).json({ message: "User not found." });
+        let token = await PasswordResetToken.findOne({ userId: user._id });
+        if (token) await PasswordResetToken.deleteOne({userId: user._id}); 
+        
+        const password_reset_token = hashPasswordResetToken();
+        token = await PasswordResetToken.create({
+            userId: user._id,
+            token: password_reset_token, 
+            createdAt: Date.now(), 
+        });  
 
+        console.log("Reset Token",token)
+        const link = `${API_URL}/passwordReset?token=${password_reset_token}&id=${user._id}`;
+        sendEmail(user.email,"Password Reset Request",{name: user.name,link: link,},"./template/requestResetPassword.handlebars");
         res.status(200).json({ message: "Success! check your email for further steps." });
 
     } catch (error) {
@@ -166,10 +181,12 @@ exports.forgetPassword = async (req, res, next) => {
     }
 }
 
+
+
 exports.resetPassword = async (req, res, next) => {
     try {
 
-        // Reset Password After User Clicks on Reset Password in email
+        
         res.status(200).json({ message: "This feature will be implemented in next sprint." });
 
     } catch (error) {
@@ -241,6 +258,7 @@ exports.viewAllPrescriptions = async (req, res, next) => {
         }
 
         if (!user.prescriptions || user.prescriptions.length === 0) {
+            console.log("12")
             return res.status(404).json({ message: "No prescriptions found for this user." });
         }
 
