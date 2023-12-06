@@ -252,7 +252,7 @@ exports.addPrescription = (req, res, next) => {
 exports.viewAllPrescriptions = async (req, res, next) => {
     try {
         const user = await Users.findById(req.user.id).populate('prescriptions');
-
+        console.log("prescriptions", user)
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
@@ -308,50 +308,30 @@ exports.updatePrescription = async (req, res, next) => {
 
         const
             {
-                prescriptionName, prescriptionType, birthYear, dateOfPrescription, renewalReminderDate,
-                singleOrDualPD, leftPD, leftSphere, leftCylinder, leftAxis, rightPD, rightSphere, rightCylinder,
-                rightAxis, nvadd, leftPrismHorizontal, leftPrismVertical, leftBaseDirectionHorizontal,
-                leftBaseDirectionVertical, rightPrismHorizontal, rightPrismVertical, rightBaseDirectionHorizontal,
-                rightBaseDirectionVertical
+                prescriptionName,
+                prescriptionType,
+                pdType,
+                pdOneNumber,
+                pdLeftNumber,
+                pdRightNumber,
+                leftEyeOS,
+                rightEyeOD,
+                birthYear,
+                dateOfPrescription
 
             } = req.body;
 
         const updatedPrescription = {
             prescriptionName: prescriptionName,
             prescriptionType: prescriptionType,
-            birthYear: birthYear,
             dateOfPrescription: dateOfPrescription,
-            renewalReminderDate: renewalReminderDate,
-            singleOrDualPD: singleOrDualPD,
-            pdInformation: {
-                left: {
-                    leftPD: leftPD,
-                    sphere: leftSphere,
-                    cylinder: leftCylinder,
-                    axis: leftAxis,
-                },
-                right: {
-                    rightPD: rightPD,
-                    sphere: rightSphere,
-                    cylinder: rightCylinder,
-                    axis: rightAxis,
-                },
-                nvadd: nvadd,
-            },
-            prismProperties: {
-                left: {
-                    prismHorizontal: leftPrismHorizontal,
-                    prismVertical: leftPrismVertical,
-                    baseDirectionHorizontal: leftBaseDirectionHorizontal,
-                    baseDirectionVertical: leftBaseDirectionVertical
-                },
-                right: {
-                    prismHorizontal: rightPrismHorizontal,
-                    prismVertical: rightPrismVertical,
-                    baseDirectionHorizontal: rightBaseDirectionHorizontal,
-                    baseDirectionVertical: rightBaseDirectionVertical
-                }
-            }
+            pdType: pdType,
+            pdOneNumber: pdOneNumber,
+            pdLeftNumber: pdLeftNumber,
+            pdRightNumber: pdRightNumber,
+            leftEyeOS: leftEyeOS,
+            rightEyeOD: rightEyeOD,
+            birthYear: birthYear,
         }
 
         const UpdatedPrescription = await Prescription.findByIdAndUpdate(prescriptionId, updatedPrescription, { new: true });
@@ -929,6 +909,26 @@ exports.viewProfileImageServer = async (req, res, next) => {
         const imageId = await Users.findById(req.user.id).select('profilePicture');
 
         if (!(imageId && imageId.profilePicture)) return res.status(400).json({ message: "Error occured while retriving image id." });
+
+        res.status(200).json(
+            {
+                profilePicture: imageId.profilePicture,
+                location: '/uploads/profile_images/' + imageId.profilePicture
+            });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Error occured while viewing image from server" })
+    }
+}
+ 
+exports.viewProfileImageServerById = async (req, res, next) => {
+    try {
+
+        const userId = req.params.userId;
+        const imageId = await Users.findById(userId).select('profilePicture');
+        
+        if (!(imageId && imageId.profilePicture)) return res.status(404).json({ message: "Image not found" });
 
         res.status(200).json(
             {

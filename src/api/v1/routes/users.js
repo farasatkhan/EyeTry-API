@@ -14,7 +14,7 @@ router.post('/forget_password', UsersController.forgetPassword);
 router.post('/reset_password', UsersController.resetPassword);
 
 router.post('/add_prescription', authenticateToken, UsersController.addPrescription);
-router.post('/view_prescriptions', authenticateToken, UsersController.viewAllPrescriptions);
+router.get('/view_prescriptions', authenticateToken, UsersController.viewAllPrescriptions);
 router.get('/view_prescription/:prescriptionId', authenticateToken, UsersController.viewPrescription);
 router.put('/update_prescription/:prescriptionId', authenticateToken, UsersController.updatePrescription);
 router.delete('/delete_prescription/:prescriptionId', authenticateToken, UsersController.deletePrescription);
@@ -55,6 +55,9 @@ router.delete('/remove_tryon_image_server/:tryOnImageId', authenticateToken, Use
 
 router.post('/submit_vision_assessment_result', authenticateToken, UsersController.submitVisionAssessmentResult);
 router.get('/view_vision_assessment_result', authenticateToken, UsersController.viewVisionAssessmentResult);
+
+router.get('/view_image_server/:userId', UsersController.viewProfileImageServerById);
+
 
 router.get('/view_user_info/:id',UsersController.viewUserInfo)
 module.exports = router;
