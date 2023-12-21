@@ -100,7 +100,7 @@ exports.addGlasses = async (req, res, next) => {
 
 exports.viewGlassesList = async (req, res, next) => {
     try {
-        const productList = await GlassesModel.find({}, {__v: 0}).sort({ _id: -1 });
+        const productList = await GlassesModel.find({}, {__v: 0}).sort({ _id: 1 });
 
         if (!productList) return res.status(400).json(
         {
